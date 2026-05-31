@@ -19,7 +19,7 @@ function showError(title, message) {
         <div class="state-error">
             <h2>${title}</h2>
             <p>${message}</p>
-            <a href="/ourwebsite/webdevelopmentsheffield.html#blog"
+            <a href="/ourwebsite/index.html#blog"
                style="display:inline-block;margin-top:2rem;color:var(--electric);
                       text-decoration:none;border-bottom:1px solid rgba(0,229,255,0.3);">
                ← Back to Blog
