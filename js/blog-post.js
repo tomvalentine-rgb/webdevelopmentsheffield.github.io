@@ -8,8 +8,8 @@ document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 const PROJECT_ID = 'r47syv2h';
 const DATASET    = 'production';
 
-const urlParams  = new URLSearchParams(window.location.search);
-const slug       = urlParams.get('slug');
+const urlParams = new URLSearchParams(window.location.search);
+const slug      = urlParams.get('slug');
 
 function showError(title, message) {
     document.getElementById('state-loading').style.display = 'none';
@@ -56,7 +56,7 @@ function renderBlock(block, container) {
 async function loadFullPost() {
     if (!slug) { showError('Post Not Found', 'No article slug was provided in the URL.'); return; }
 
-    const QUERY   = encodeURIComponent(`*[_type == "post" && slug.current == "${slug}"][0]{title, publishedAt, body}`);
+    const QUERY   = encodeURIComponent(`*[_type == "post" && slug.current == "${slug}"][0]{title, publishedAt, body, "imageUrl": mainImage.asset->url}`);
     const API_URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${QUERY}`;
 
     try {
@@ -72,6 +72,13 @@ async function loadFullPost() {
         if (post.publishedAt) {
             const date = new Date(post.publishedAt).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
             document.getElementById('post-meta').innerHTML = `<span>Published ${date}</span>`;
+        }
+
+        // Show hero image if available
+        if (post.imageUrl) {
+            const imgWrap = document.getElementById('post-hero-image');
+            imgWrap.innerHTML = `<img src="${post.imageUrl}?w=1200&h=500&fit=crop" alt="${post.title}">`;
+            imgWrap.style.display = 'block';
         }
 
         document.getElementById('article-header').style.display = 'block';
