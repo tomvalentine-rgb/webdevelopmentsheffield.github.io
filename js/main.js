@@ -87,7 +87,7 @@ function renderPosts() {
                 ${ date ? `<p class="blog-card-date">${date}</p>` : '' }
                 <h2>${post.title}</h2>
                 <p>${post.excerpt || 'Click to read the full article...'}</p>
-                <a href="/ourwebsite/blog-post.html?slug=${post.slug}">Read More →</a>
+                <a href="blog-post.html?slug=${encodeURIComponent(post.slug)}">Read More →</a>
             </div>
         `;
         container.insertBefore(article, document.getElementById('blog-pagination'));
