@@ -18,6 +18,19 @@ function closeMenu() {
     mobileMenu.classList.remove('open');
 }
 
+/* ─── FAQ ACCORDION ───────────────────────────── */
+const faqItems = document.querySelectorAll('.faq-item');
+
+faqItems.forEach(item => {
+    item.addEventListener('toggle', () => {
+        if (!item.open) return;
+
+        faqItems.forEach(otherItem => {
+            if (otherItem !== item) otherItem.open = false;
+        });
+    });
+});
+
 /* ─── EMAILJS CONTACT FORM ────────────────────── */
 emailjs.init('FzhcE3c4OivFCtrVc');
 
