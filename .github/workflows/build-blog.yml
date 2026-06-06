@@ -1,0 +1,42 @@
+name: Build blog
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 6 * * *' # daily at 06:00 UTC
+  repository_dispatch:
+    types: [sanity-publish] # optional: trigger from a Sanity webhook
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-blog
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build:blog
+
+      - name: Commit regenerated blog if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain blog sitemap.xml index.html)" ]; then
+            git add blog sitemap.xml index.html
+            git commit -m "chore: regenerate static blog from Sanity"
+            git push
+          else
+            echo "No blog changes to commit."
+          fi

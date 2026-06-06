@@ -2,63 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading Article...</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="robots" content="noindex">
+    <title>Redirecting…</title>
+    <link rel="canonical" href="https://webdevelopmentsheffield.co.uk/blog/">
+    <script>
+        (function () {
+            var slug = new URLSearchParams(location.search).get('slug');
+            location.replace(slug ? '/blog/' + encodeURIComponent(slug) + '/' : '/blog/');
+        })();
+    </script>
 </head>
 <body>
-
-<!-- NAV -->
-<nav>
-    <a class="nav-logo" href="index.html">WD<span>.</span>SHEFFIELD</a>
-    <ul class="nav-links">
-        <li><a href="index.html#services">Services</a></li>
-        <li><a href="index.html#process">Process</a></li>
-        <li><a href="index.html#pricing">Pricing</a></li>
-        <li><a href="index.html#testimonials">Reviews</a></li>
-        <li><a href="index.html#blog">Blog</a></li>
-        <li><a href="index.html#contact" class="nav-cta">Get a Quote</a></li>
-    </ul>
-</nav>
-
-<!-- ARTICLE HEADER -->
-<div class="article-header" id="article-header" style="display:none;">
-    <div class="article-header-grid"></div>
-    <div style="position:relative; max-width:860px;">
-        <a class="back-link" href="index.html#blog">Back</a>
-        <p class="article-label">Web Development Sheffield — Blog</p>
-        <h1 id="post-title">Loading...</h1>
-        <div class="article-meta" id="post-meta"></div>
-    </div>
-</div>
-
-<!-- HERO IMAGE (shown below header if post has image) -->
-<div id="post-hero-image" class="post-hero-image" style="display:none;"></div>
-
-<!-- LOADING STATE -->
-<div id="state-loading" class="state-loading" style="margin-top:6rem;">
-    <div class="spinner"></div>
-    <p>Fetching the full story...</p>
-</div>
-
-<!-- ARTICLE BODY -->
-<div class="article-body" id="post-body" style="display:none;"></div>
-
-<!-- FOOTER -->
-<footer>
-    <a class="footer-logo" href="index.html">WD<span>.</span>SHEFFIELD</a>
-    <p>© 2026 Web Development Sheffield. All rights reserved.</p>
-    <ul class="footer-links">
-        <li><a href="index.html#services">Services</a></li>
-        <li><a href="index.html#pricing">Pricing</a></li>
-        <li><a href="index.html#contact">Contact</a></li>
-    </ul>
-</footer>
-
-<script src="js/blog-post.js"></script>
-
+    <p>Redirecting to the article… <a id="continue" href="/blog/">Continue</a></p>
+    <script>
+        (function () {
+            var slug = new URLSearchParams(location.search).get('slug');
+            document.getElementById('continue').href = slug ? '/blog/' + encodeURIComponent(slug) + '/' : '/blog/';
+        })();
+    </script>
 </body>
 </html>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://webdevelopmentsheffield.co.uk/sitemap.xml
