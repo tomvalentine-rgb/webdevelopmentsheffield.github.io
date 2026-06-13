@@ -178,6 +178,10 @@ function postPage(post) {
     <title>${escapeHtml(post.title)} | Web Development Sheffield</title>
     <meta name="description" content="${escapeAttr(description)}">
     <link rel="canonical" href="${url}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="${url}">
+    <meta property="og:title" content="${escapeAttr(post.title)}">
+    <meta property="og:description" content="${escapeAttr(description)}">
 ${HEAD_COMMON}
     <script type="application/ld+json">
 ${ld}
