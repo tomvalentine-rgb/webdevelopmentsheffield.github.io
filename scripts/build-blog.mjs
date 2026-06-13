@@ -175,6 +175,13 @@ function postPage(post) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1JNH702LBD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1JNH702LBD');
+    </script>
     <title>${escapeHtml(post.title)} | Web Development Sheffield</title>
     <meta name="description" content="${escapeAttr(description)}">
     <link rel="canonical" href="${url}">
