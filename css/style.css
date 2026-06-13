@@ -25,10 +25,77 @@ body {
     min-height: 100vh;
 }
 
+/* ─── SITE HEADER CONTAINER ──────────────────── */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ─── TOP BAR  ────────────────────────── */
+.top-bar {
+    width: 100%;
+    background: #060608;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    padding: 0.5rem 4rem;
+}
+
+.top-bar-content {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.top-bar-link {
+    color: var(--muted, #94a3b8);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    transition: color 0.2s ease;
+}
+
+.top-bar-link:hover {
+    color: var(--electric, #00f0ff);
+}
+
+.top-bar-divider {
+    color: rgba(255, 255, 255, 0.15);
+    margin: 0 1rem;
+    font-size: 0.75rem;
+    user-select: none;
+}
+
+/* Ensure top bar visible on mobile */
+@media (max-width: 768px) {
+    .top-bar {
+        padding: 0.5rem 1rem;
+    }
+
+    .top-bar-content {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .top-bar-divider {
+        margin: 0 0.5rem;
+    }
+
+    .top-bar-link {
+        font-size: 0.8rem;
+    }
+}
+
 /* ─── NAV ─────────────────────────────────────── */
 nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 1.2rem 4rem;
     background: rgba(13,15,20,0.85);
     backdrop-filter: blur(12px);

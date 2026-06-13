@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Development And Web Design In Sheffield</title>
-    <meta name="description" content="Affordable web development and mobile-first web design in Sheffield. Fast 14-day turnaround for local businesses. Book a free consultation today.">
+    <meta name="description" content="Affordable web development and web design in Sheffield. Book a free consultation today.">
     <link rel="canonical" href="https://webdevelopmentsheffield.co.uk/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://webdevelopmentsheffield.co.uk/">
+    <meta property="og:title" content="Web Development And Web Design In Sheffield">
+    <meta property="og:description" content="Affordable web development and mobile-first web design in Sheffield. Book a free consultation today.">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
@@ -24,7 +28,7 @@
             "addressRegion": "South Yorkshire",
             "addressCountry": "GB"
         },
-        "areaServed": ["Sheffield", "South Yorkshire", "Derbyshire", "Doncaster", "Peak District"],
+        "areaServed": ["Sheffield", "South Yorkshire", "Derbyshire", "Doncaster", "Peak District", "Rotherham", "Barnsley", "Dronfield", "Derbyshire"],
         "priceRange": "££"
     }
     </script>
@@ -35,29 +39,44 @@
 </head>
 <body>
 
+
+
 <!-- NAV -->
-<nav>
-    <a class="nav-logo" href="#">WD<span>.</span>SHEFFIELD</a>
-    <ul class="nav-links">
-        <li><a href="#services">Services</a></li>
-        <li><a href="#process">Process</a></li>
-        <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="#testimonials">Reviews</a></li>
-        <li><a href="#blog">Blog</a></li>
-        <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
-    </ul>
-    <button class="hamburger" id="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-    </button>
-</nav>
+<header class="site-header">
+
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <a href="tel:+447864981381" class="top-bar-link">07864981381</a>
+            <span class="top-bar-divider">|</span>
+            <a href="mailto:info@webdevelopmentsheffield.co.uk" class="top-bar-link">info@webdevelopmentsheffield.co.uk</a>
+        </div>
+    </div>
+
+    <nav>
+        <a class="nav-logo" href="#">WD<span>.</span>SHEFFIELD</a>
+
+        <ul class="nav-links">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#process">Process</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#faq">FAQs</a></li>
+            <li><a href="#testimonials">Reviews</a></li>
+            <li><a href="#blog">Blog</a></li>
+            <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+</header>
 
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobile-menu">
     <a href="#services" onclick="closeMenu()">Services</a>
     <a href="#process" onclick="closeMenu()">Process</a>
     <a href="#pricing" onclick="closeMenu()">Pricing</a>
-    <a href="#faq" onclick="closeMenu()">FAQ</a>
+    <a href="#faq" onclick="closeMenu()">FAQs</a>
     <a href="#testimonials" onclick="closeMenu()">Reviews</a>
     <a href="#blog" onclick="closeMenu()">Blog</a>
     <a href="#contact" onclick="closeMenu()">Get a Quote</a>
@@ -272,90 +291,115 @@
             <details class="faq-item">
                 <summary>
                     <span class="faq-number">01</span>
-                    <span class="faq-question">Can I make changes to the sites myself?</span>
+                    <span class="faq-question">What is the difference between web design and web development?</span>
                     <span class="faq-toggle" aria-hidden="true">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <p>None technical staff should be able to edit every key aspect of a website efficiently without out the fear of breaking it. Our sites will be custom built specifically for you and/or your staff providing full control of whatever you need.</p>
+                    <p> <a href="https://webdevelopmentsheffield.co.uk/">Web development</a> is the technical,
+                        behind-the-scenes process of building a website using programming, coding, and data management.
+                        While web design focuses purely on the visual look, feel, and user experience, web development
+                        ensures the site actually functions. It powers critical elements like contact forms, e-commerce
+                        checkouts, and custom blog layouts so your site works exactly as intended.</p>
                 </div>
             </details>
 
             <details class="faq-item">
                 <summary>
                     <span class="faq-number">02</span>
-                    <span class="faq-question">How do I know you can improve my SEO?</span>
+                    <span class="faq-question">What areas do you serve? Can I hire you if I’m outside Sheffield?</span>
                     <span class="faq-toggle" aria-hidden="true">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <p>If you’re getting help from an SEO business, a good way to tell if they’re worth their salt is to look at how well their own website ranks. If they can’t get their own site to perform, they’ll likely struggle to do the same for you. We’ll use the same methods that helped you find our site, to bring people to yours.</p>
+                    <p>While were based in Sheffield, we work with businesses all across the UK.</p>
                 </div>
             </details>
 
             <details class="faq-item">
                 <summary>
                     <span class="faq-number">03</span>
-                    <span class="faq-question">Do you offer a discount for charities?</span>
+                    <span class="faq-question">How long does it take to build a custom website from scratch?</span>
                     <span class="faq-toggle" aria-hidden="true">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <p>We love working with not-for-profit charities and ethical organisations. We offer half price web design and development services for registered charities. <a href="#contact">Get in contact</a> for more info.</p>
+                    <p>The time it takes to build a website all depends on the type of website you require.
+                        For a simple <a href="#pricing">one-page website</a> our team can normally have a first version
+                        live within a few days. For more complex websites with more complex features, it normally takes
+                        a couple of weeks. We provide a definitive timeline before any development begins but remain
+                        flexible should any requirements change as the project develops. </p>
                 </div>
             </details>
 
             <details class="faq-item">
                 <summary>
                     <span class="faq-number">04</span>
-                    <span class="faq-question">Websites can be built cheaply. Why do these sites cost more?</span>
+                    <span class="faq-question">How much does a website cost?</span>
                     <span class="faq-toggle" aria-hidden="true">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <p>The best way to assess value is to review a companies hourly rate or how long they take building a site. Quality websites take time to build, we don’t speed up development by using <a href="#services">templates</a> or relying on plugins, every site we build is completely custom and unique.</p>
+                    <p>Because every project is unique, we provide tailored quotes based entirely on your specific goals
+                        and requirements. However, to see a rough breakdown of custom web development costs, please take
+                        a look at our <a href="#pricing">guide to our pricing</a>.
+                        We believe in honest partnerships, which is why we always provide clear and transparent pricing
+                        before any development begins, ensuring you get maximum value with absolutely
+                        no hidden surprises.
+                    <p></p>
                 </div>
             </details>
 
             <details class="faq-item">
                 <summary>
                     <span class="faq-number">05</span>
-                    <span class="faq-question">Do you offer a PPC or development only service?</span>
+                    <span class="faq-question">Do you build websites using WordPress, or do you custom code?</span>
                     <span class="faq-toggle" aria-hidden="true">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <p>We’re happy to assist you through any phase of creating your website. This can include any of these components; strategy, content creation, marketing, design, development and SEO.</p>
+                    <p>We specialize in lightweight, high-performance <a href="#services"> web development </a>. Depending on your business goals,
+                        we either build completely bespoke custom-coded websites or develop highly customized,
+                        lightweight WordPress sites. We never use heavy, bloated themes or excessive plugins, ensuring
+                        your site remains secure, fast, and easy to update.</p>
                 </div>
             </details>
 
             <details class="faq-item">
                 <summary>
                     <span class="faq-number">06</span>
-                    <span class="faq-question">How much does a website cost?</span>
+                    <span class="faq-question">How do you ensure my new website is optimised for Google rankings?</span>
                     <span class="faq-toggle" aria-hidden="true">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <p>We quote specifically depending on your requirements and what is needed to get people to your site. This requires research and a strategy. As a <a href="#pricing">guide to our pricing</a> full projects with an SEO focus start at around £5,000, simple redesigns from around £4,000.</p>
+                    <p>Every website we build is engineered with technical SEO at its core. Google prioritizes fast,
+                        responsive, and well-structured websites, which is why we completely avoid heavy themes and
+                        bloated plugins. We optimize your site's code, structure, images, and mobile performance to hit
+                        top marks on Google’s Core Web Vitals. While achieving a top spot on page one requires an ongoing
+                        content and keyword strategy, we ensure your site has the flawless technical foundation needed
+                        to outrank your competition right out of the gate.</p>
                 </div>
             </details>
 
             <details class="faq-item">
                 <summary>
                     <span class="faq-number">07</span>
-                    <span class="faq-question">Can we meet in person in Sheffield?</span>
+                    <span class="faq-question">Can I update the content on my website myself once it’s live?</span>
                     <span class="faq-toggle" aria-hidden="true">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <p>We generally work independently from our own office but have meeting space at our registered address at The Circle in Sheffield. If you’d prefer not to have video calls we can meet you in person.</p>
+                    <p>Yes. Our sites are custom-built specifically for you and your team ensuring that you have full
+                        control of whatever you need. We ensure everyone is up to speed before we fully hand over the
+                        project, and always remain available if any assistance is required. </p>
                 </div>
             </details>
 
             <details class="faq-item">
                 <summary>
                     <span class="faq-number">08</span>
-                    <span class="faq-question">Will a new site enhance business?</span>
+                    <span class="faq-question">Do you provide ongoing website maintenance and SEO support?</span>
                     <span class="faq-toggle" aria-hidden="true">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <h3>As well as looking great, our websites increase traffic and exposure</h3>
-                    <p>It’s a misconception that a newly built website will immediately start bringing in traffic through services like Google. The harsh reality is that a new website often won’t have any visits for the first 1-2 years unless it has been specifically optimised or it targets achievable and popular search terms.</p>
-                    <p>Websites that rank well are designed and developed this way from the beginning, with SEO woven into every aspect of their design, content and structure. SEO companies rarely focus on web design but it’s something we’ve seen that is critical in helping our clients grow their businesses and online presence.</p>
+                    <p>Yes, a website shouldn't just sit there after launch.
+                        We offer ongoing website hosting, technical maintenance, security updates, and monthly
+                        SEO packages to ensure your site continues to climb the Google rankings, drive organic traffic,
+                        and convert visitors into customers long after going live.</p>
                 </div>
             </details>
         </div>
@@ -450,7 +494,7 @@
                 </div>
                 <div class="contact-detail-text">
                     <strong>Phone</strong>
-                    <span>07864981381</span>
+                    <a href="tel:+447864981381" style="color:var(--electric);text-decoration:none;font-size:0.85rem;" >07864981381</a>
                 </div>
             </div>
             <div class="contact-detail">
@@ -468,16 +512,16 @@
                 </div>
                 <div class="contact-detail-text">
                     <strong>Email</strong>
-                    <span>info@webdevelopmentsheffield.co.uk</span>
+                    <a href="mailto:info@webdevelopmentsheffield.co.uk" style="color:var(--electric);text-decoration:none;font-size:0.85rem;">info@webdevelopmentsheffield.co.uk</a>
                 </div>
             </div>
             <div class="contact-detail">
                 <div class="contact-detail-icon">
-                    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--electric)" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 </div>
                 <div class="contact-detail-text">
                     <strong>Location</strong>
-                    <span>Millhouses, Sheffield, South Yorkshire</span>
+                    <a href="https://maps.app.goo.gl/vg2UcjewS4XC4hkH6" target="_blank" rel="noopener noreferrer" style="color:var(--electric);text-decoration:none;font-size:0.85rem;">Millhouses, Sheffield, South Yorkshire</a>
                 </div>
             </div>
         </div>
@@ -525,83 +569,83 @@
     <ul class="footer-links">
         <li><a href="#services">Services</a></li>
         <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#faq">FAQs</a></li>
         <li><a href="#contact">Contact</a></li>
     </ul>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-        {
-            "@type": "Question",
-            "name": "Can I make changes to the sites myself?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "None technical staff should be able to edit every key aspect of a website efficiently without out the fear of breaking it. Our sites will be custom built specifically for you and/or your staff providing full control of whatever you need."
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is the difference between web design and web development?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Web development is the technical, behind-the-scenes process of building a website using programming, coding, and data management. While web design focuses on the visual look, feel, and user experience, web development ensures the site functions correctly. It powers critical elements like contact forms, e-commerce checkouts, and custom blog layouts so your site works exactly as intended."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What areas do you serve? Can I hire you if I’m outside Sheffield?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "While we're based in Sheffield, we work with businesses all across the UK."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How long does it take to build a custom website from scratch?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "The time it takes to build a website depends on the type of website you require. For a simple one-page website, we can normally have a first version live within a few days. For more complex websites with advanced features, it normally takes a couple of weeks. We provide a definitive timeline before development begins and remain flexible should requirements change during the project."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How much does a website cost?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Because every project is unique, we provide tailored quotes based entirely on your specific goals and requirements. We always provide clear and transparent pricing before any development begins, ensuring you get maximum value with no hidden surprises."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Do you build websites using WordPress, or do you custom code?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "We specialize in lightweight, high-performance web development. Depending on your business goals, we either build completely bespoke custom-coded websites or develop highly customized, lightweight WordPress sites. We never use heavy themes or excessive plugins, ensuring your site remains secure, fast, and easy to update."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do you ensure my new website is optimised for Google rankings?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Every website we build is engineered with technical SEO at its core. We optimize your site's code, structure, images, and mobile performance to achieve strong Core Web Vitals scores. While top rankings require ongoing content and keyword strategies, we ensure your website has the technical foundation needed to compete effectively in search results."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I update the content on my website myself once it’s live?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Our sites are custom-built specifically for you and your team, ensuring you have full control over your content. We provide training before handover and remain available if any assistance is required."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Do you provide ongoing website maintenance and SEO support?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. We offer ongoing website hosting, technical maintenance, security updates, and monthly SEO packages to ensure your site continues to perform well, attract organic traffic, and generate leads long after launch."
+                }
             }
-        },
-        {
-            "@type": "Question",
-            "name": "How do I know you can improve my SEO?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "If you’re getting help from an SEO business, a good way to tell if they’re worth their salt is to look at how well their own website ranks. If they can’t get their own site to perform, they’ll likely struggle to do the same for you. We’ll use the same methods that helped you find our site, to bring people to yours."
-            }
-        },
-        {
-            "@type": "Question",
-            "name": "Do you offer a discount for charities?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "We love working with not-for-profit charities and ethical organisations. We offer half price web design and development services for registered charities. Get in contact for more info."
-            }
-        },
-        {
-            "@type": "Question",
-            "name": "Websites can be built cheaply. Why do these sites cost more?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "The best way to assess value is to review a companies hourly rate or how long they take building a site. Quality websites take time to build, we don’t speed up development by using templates or relying on plugins, every site we build is completely custom and unique."
-            }
-        },
-        {
-            "@type": "Question",
-            "name": "Do you offer a PPC or development only service?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "We’re happy to assist you through any phase of creating your website. This can include any of these components; strategy, content creation, marketing, design, development and SEO."
-            }
-        },
-        {
-            "@type": "Question",
-            "name": "How much does a website cost?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "We quote specifically depending on your requirements and what is needed to get people to your site. This requires research and a strategy. As a guide to our pricing full projects with an SEO focus start at around £5,000, simple redesigns from around £4,000."
-            }
-        },
-        {
-            "@type": "Question",
-            "name": "Can we meet in person in Sheffield?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "We generally work independently from our own office but have meeting space at our registered address at The Circle in Sheffield. If you’d prefer not to have video calls we can meet you in person."
-            }
-        },
-        {
-            "@type": "Question",
-            "name": "Will a new site enhance business?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "As well as looking great, our websites increase traffic and exposure. It’s a misconception that a newly built website will immediately start bringing in traffic through services like Google. The harsh reality is that a new website often won’t have any visits for the first 1-2 years unless it has been specifically optimised or it targets achievable and popular search terms. Websites that rank well are designed and developed this way from the beginning, with SEO woven into every aspect of their design, content and structure. SEO companies rarely focus on web design but it’s something we’ve seen that is critical in helping our clients grow their businesses and online presence."
-            }
-        }
-    ]
-}
+        ]
+    }
 </script>
 <script src="js/main.js" defer></script>
 
