@@ -8,7 +8,13 @@
  *   - sitemap.xml               (homepage + /blog/ + every post)
  *
  * Output is deterministic so the GitHub Action only commits when content
- * actually changes. No Open Graph / social tags are emitted (out of scope).
+ * actually changes.
+ *
+ * Key features:
+ *   - Table of contents auto-generated from h2/h3 headings in the post body
+ *   - Heading IDs added so TOC anchor links work
+ *   - Hyperlinks in Sanity portable text rendered as <a> tags
+ *   - Related articles pulled from the 3 most recent other posts (with image)
  */
 
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
@@ -43,7 +49,6 @@ const escapeHtml = (s) =>
 
 const escapeAttr = (s) => escapeHtml(s).replace(/"/g, '&quot;');
 
-// JSON-LD: stringify then neutralise any "</script>" sequences.
 const jsonLd = (obj) =>
   JSON.stringify(obj, null, 2).replace(/</g, '\\u003c');
 
@@ -75,21 +80,126 @@ function truncate(text, max) {
   return text.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
 }
 
-const portableTextComponents = {
-  marks: {
-    link: ({ children, value }) => {
-      const href = value?.href || '#';
-      const external = /^https?:\/\//i.test(href);
-      const extra = external ? ' target="_blank" rel="noopener"' : '';
-      return `<a href="${escapeAttr(href)}"${extra}>${children}</a>`;
-    },
-  },
-};
+/**
+ * Convert a heading string to a URL-friendly id.
+ * Mirrors the logic used by most markdown renderers.
+ */
+function slugifyHeading(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')   // strip punctuation
+    .trim()
+    .replace(/[\s_]+/g, '-')    // spaces → hyphens
+    .replace(/-+/g, '-');       // collapse repeated hyphens
+}
 
-const renderBody = (body) =>
-  body && body.length
-    ? toHTML(body, { components: portableTextComponents })
-    : '<p>This article has no content yet.</p>';
+/**
+ * Extract all h2 and h3 headings from Sanity portable-text body blocks.
+ * Returns an array of { level, text, id } objects in document order.
+ */
+function extractHeadings(body) {
+  const headings = [];
+  const seenIds = {};
+
+  for (const block of body || []) {
+    if (block._type !== 'block') continue;
+    if (!['h2', 'h3'].includes(block.style)) continue;
+
+    const text = (block.children || []).map((c) => c.text || '').join('').trim();
+    if (!text) continue;
+
+    let id = slugifyHeading(text);
+
+    // deduplicate ids (e.g. two headings with the same text)
+    if (seenIds[id]) {
+      seenIds[id] += 1;
+      id = `${id}-${seenIds[id]}`;
+    } else {
+      seenIds[id] = 1;
+    }
+
+    headings.push({ level: block.style, text, id });
+  }
+
+  return headings;
+}
+
+/* ── portable text rendering ─────────────────────────────── */
+
+/**
+ * Build a custom @portabletext/to-html serialiser that:
+ *  - adds slug-based id attributes to h2/h3 elements
+ *  - renders hyperlinks correctly
+ *  - keeps all other default behaviour
+ */
+function makeComponents(headings) {
+  // Build a lookup: text → id so we can find the id for each heading
+  // (same dedup logic as extractHeadings)
+  const seenIds = {};
+  const headingIdMap = new Map();
+
+  for (const block of headings) {
+    let id = slugifyHeading(block.text);
+    if (seenIds[id]) {
+      seenIds[id] += 1;
+      id = `${id}-${seenIds[id]}`;
+    } else {
+      seenIds[id] = 1;
+    }
+    headingIdMap.set(block.text, id);
+  }
+
+  return {
+    block: {
+      h2: ({ children, value }) => {
+        const text = (value.children || []).map((c) => c.text || '').join('').trim();
+        const id = headingIdMap.get(text) || slugifyHeading(text);
+        return `<h2 id="${escapeAttr(id)}">${children}</h2>`;
+      },
+      h3: ({ children, value }) => {
+        const text = (value.children || []).map((c) => c.text || '').join('').trim();
+        const id = headingIdMap.get(text) || slugifyHeading(text);
+        return `<h3 id="${escapeAttr(id)}">${children}</h3>`;
+      },
+    },
+    marks: {
+      link: ({ children, value }) => {
+        const href = value?.href || '#';
+        const external = /^https?:\/\//i.test(href);
+        const extra = external ? ' target="_blank" rel="noopener noreferrer"' : '';
+        return `<a href="${escapeAttr(href)}"${extra}>${children}</a>`;
+      },
+    },
+  };
+}
+
+function renderBody(body) {
+  if (!body || !body.length) {
+    return '<p>This article has no content yet.</p>';
+  }
+
+  const headings = extractHeadings(body);
+  const components = makeComponents(headings);
+
+  return toHTML(body, { components });
+}
+
+/* ── table of contents ───────────────────────────────────── */
+
+function renderToc(headings) {
+  if (!headings.length) return '';
+
+  const items = headings
+    .map(({ text, id }) => `        <li>\n            <a href="#${escapeAttr(id)}">\n                ${escapeHtml(text)}\n            </a>\n        </li>`)
+    .join('\n');
+
+  return `  <aside class="article-toc">
+      <h3>Contents</h3>
+      <ul id="toc-list">
+${items}
+      </ul>
+  </aside>`;
+}
 
 /* ── shared chrome ───────────────────────────────────────── */
 
@@ -101,29 +211,108 @@ const HEAD_COMMON = `    <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">`;
 
-const NAV = `<nav>
-    <a class="nav-logo" href="/">WD<span>.</span>SHEFFIELD</a>
-    <ul class="nav-links">
-        <li><a href="/#services">Services</a></li>
-        <li><a href="/#process">Process</a></li>
-        <li><a href="/#pricing">Pricing</a></li>
-        <li><a href="/#faq">FAQ</a></li>
-        <li><a href="/#testimonials">Reviews</a></li>
-        <li><a href="/#blog">Blog</a></li>
-        <li><a href="/#contact" class="nav-cta">Get a Quote</a></li>
-    </ul>
-</nav>`;
+const HEADER = `<header class="site-header">
+
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <a href="tel:+447864981381" class="top-bar-link">07864981381</a>
+            <span class="top-bar-divider">|</span>
+            <a href="mailto:info@webdevelopmentsheffield.co.uk" class="top-bar-link">info@webdevelopmentsheffield.co.uk</a>
+        </div>
+    </div>
+
+    <nav>
+        <a class="nav-logo" href="/">
+            <img src="/assets/logo.png" alt="Web Development Sheffield Logo" class="logo-img">
+            <span class="logo-text">Web Development Sheffield</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#process">Process</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#faq">FAQs</a></li>
+            <li><a href="#blog">Blog</a></li>
+            <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+</header>`;
 
 const FOOTER = `<footer>
-    <a class="footer-logo" href="/">WD<span>.</span>SHEFFIELD</a>
-    <p>© 2026 Web Development Sheffield. All rights reserved.</p>
-    <ul class="footer-links">
-        <li><a href="/#services">Services</a></li>
-        <li><a href="/#pricing">Pricing</a></li>
-        <li><a href="/#faq">FAQ</a></li>
-        <li><a href="/#contact">Contact</a></li>
-    </ul>
+    <div class="footer-container">
+
+        <div class="footer-brand">
+            <a class="nav-logo" href="/">
+                <img src="/assets/logo.png" alt="Web Development Sheffield Logo" class="logo-img">
+                <span class="logo-text">Web Development Sheffield</span>
+            </a>
+            <p>
+                Professional web design and web development services for
+                businesses in Sheffield and across the UK.
+            </p>
+            <div class="social-links">
+                <a href="https://www.linkedin.com/company/webdevelopmentsheffield/">LinkedIn</a>
+                <a href="https://www.facebook.com/profile.php?id=61591130790464">Facebook</a>
+                <a href="https://maps.app.goo.gl/odgEvB52S14oxhgo6">Google</a>
+            </div>
+        </div>
+
+        <div class="footer-column">
+            <h3>Contact</h3>
+            <p><strong>Web Development Sheffield</strong></p>
+            <address>
+                Millhouses<br>
+                Sheffield<br>
+                United Kingdom
+            </address>
+            <p><a href="tel:07864981381">07864981381</a></p>
+            <p>
+                <a href="mailto:info@webdevelopmentsheffield.co.uk">
+                    info@webdevelopmentsheffield.co.uk
+                </a>
+            </p>
+        </div>
+
+        <div class="footer-column">
+            <h3>Services</h3>
+            <ul>
+                <li><a href="/index.html#services">Web Design</a></li>
+                <li><a href="/index.html#services">Web Development</a></li>
+                <li><a href="/index.html#services">SEO</a></li>
+                <li><a href="/index.html#services">Website Maintenance</a></li>
+                <li><a href="/index.html#services">E-Commerce</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="/index.html#pricing">Pricing</a></li>
+                <li><a href="/index.html#process">Process</a></li>
+                <li><a href="/index.html#faq">FAQs</a></li>
+                <li><a href="/index.html#blog">Blog</a></li>
+                <li><a href="/index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>© 2026 Web Development Sheffield. All rights reserved.</p>
+
+        <p>
+            Listed in
+            <a href="https://www.sheffield-business.co.uk">
+                Sheffield Business Directory
+            </a>
+        </p>
+    </div>
 </footer>`;
+
+/* ── blog card (used on homepage + blog index) ───────────── */
 
 const NO_IMAGE_SVG = `<div class="blog-card-image blog-card-no-image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>`;
 
@@ -144,15 +333,65 @@ function card(post) {
 </article>`;
 }
 
+/* ── related posts section ───────────────────────────────── */
+
+/**
+ * Build the "Related Articles" section from the 3 most recent posts
+ * that are not the current post.
+ */
+function relatedPostsSection(currentSlug, allPosts) {
+  const related = allPosts
+    .filter((p) => p.slug !== currentSlug)
+    .slice(0, 3);
+
+  if (!related.length) return '';
+
+  const cards = related.map((post) => {
+    const date = fmtDate(post.publishedAt);
+    const summary = truncate(firstParagraph(post.body), 120) || 'Click to read the full article…';
+    const image = post.imageUrl
+      ? `<div class="related-post-image">\n                <img\n                    src="${escapeAttr(post.imageUrl)}?w=400&h=220&fit=crop"\n                    alt="${escapeAttr(post.title)}">\n            </div>`
+      : `<div class="related-post-image related-post-no-image"></div>`;
+
+    return `    <article class="related-post-card">
+        <a href="/blog/${encodeURIComponent(post.slug)}/">
+
+            ${image}
+
+            <div class="related-post-content">
+                ${date ? `<span class="related-post-date">\n                    ${escapeHtml(date)}\n                </span>` : ''}
+
+                <h3>
+                    ${escapeHtml(post.title)}
+                </h3>
+
+                <p>
+                    ${escapeHtml(summary)}
+                </p>
+            </div>
+
+        </a>
+    </article>`;
+  }).join('\n\n');
+
+  return `\n<section class="related-posts">\n\n<div class="related-posts-header">\n    <p class="section-label">Continue Reading</p>\n    <h2>Related Articles</h2>\n    <p>\n        Explore more insights, tips and guides from\n        Web Development Sheffield.\n    </p>\n</div>\n\n<div class="related-posts-grid">\n\n${cards}\n\n</div>\n\n\n</section>\n`;
+}
+
 /* ── page templates ──────────────────────────────────────── */
 
-function postPage(post) {
+function postPage(post, allPosts) {
   const url = `${SITE_URL}/blog/${post.slug}/`;
   const description = truncate(firstParagraph(post.body), 155);
   const date = fmtDate(post.publishedAt);
+
   const hero = post.imageUrl
     ? `<div class="post-hero-image"><img src="${escapeAttr(post.imageUrl)}?w=1200&h=500&fit=crop" alt="${escapeAttr(post.title)}"></div>`
     : '';
+
+  const headings = extractHeadings(post.body);
+  const toc = renderToc(headings);
+  const body = renderBody(post.body);
+  const related = relatedPostsSection(post.slug, allPosts);
 
   const ld = jsonLd({
     '@context': 'https://schema.org',
@@ -180,7 +419,7 @@ function postPage(post) {
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-1JNH702LBD');
+      gtag('config', 'G-1JNH702LBD'); 
     </script>
     <title>${escapeHtml(post.title)} | Web Development Sheffield</title>
     <meta name="description" content="${escapeAttr(description)}">
@@ -196,7 +435,7 @@ ${ld}
 </head>
 <body>
 
-${NAV}
+${HEADER}
 
 <div class="article-header">
     <div class="article-header-grid"></div>
@@ -210,9 +449,29 @@ ${NAV}
 
 ${hero}
 
-<div class="article-body" id="post-body">
-${renderBody(post.body)}
+<div class="article-layout">
+
+${toc}
+
+  <div class="article-body" id="post-body">
+${body}
+  </div>
+
 </div>
+
+
+<section class="article-cta-wrapper">
+  <section class="article-cta">
+      <h2>Need a Website for Your Business?</h2>
+      <p> We partner with businesses at every stage of growth to deliver custom websites that drive real results. </p>
+      <a href="/index.html/#contact" class="btn-primary">
+          Get a Quote
+      </a>
+
+  </section>
+</section>
+
+${related}
 
 ${FOOTER}
 
@@ -242,6 +501,13 @@ function blogIndexPage(posts) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1JNH702LBD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1JNH702LBD');
+    </script>
     <title>Blog | Web Development Sheffield</title>
     <meta name="description" content="Practical articles on web design, web development, SEO and website performance for Sheffield businesses.">
     <link rel="canonical" href="${url}">
@@ -252,7 +518,7 @@ ${ld}
 </head>
 <body>
 
-${NAV}
+${HEADER}
 
 <div class="article-header">
     <div class="article-header-grid"></div>
@@ -329,7 +595,7 @@ async function main() {
   for (const post of posts) {
     const dir = join(blogDir, post.slug);
     await mkdir(dir, { recursive: true });
-    await writeFile(join(dir, 'index.html'), postPage(post));
+    await writeFile(join(dir, 'index.html'), postPage(post, posts));
     console.log(`• Wrote blog/${post.slug}/index.html`);
   }
 
