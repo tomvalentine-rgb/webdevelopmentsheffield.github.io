@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1JNH702LBD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1JNH702LBD');
+    </script>
     <title>Blog | Web Development Sheffield</title>
     <meta name="description" content="Practical articles on web design, web development, SEO and website performance for Sheffield businesses.">
     <link rel="canonical" href="https://webdevelopmentsheffield.co.uk/blog/">
@@ -49,18 +56,36 @@
 </head>
 <body>
 
-<nav>
-    <a class="nav-logo" href="/">WD<span>.</span>SHEFFIELD</a>
-    <ul class="nav-links">
-        <li><a href="/#services">Services</a></li>
-        <li><a href="/#process">Process</a></li>
-        <li><a href="/#pricing">Pricing</a></li>
-        <li><a href="/#faq">FAQ</a></li>
-        <li><a href="/#testimonials">Reviews</a></li>
-        <li><a href="/#blog">Blog</a></li>
-        <li><a href="/#contact" class="nav-cta">Get a Quote</a></li>
-    </ul>
-</nav>
+<header class="site-header">
+
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <a href="tel:+447864981381" class="top-bar-link">07864981381</a>
+            <span class="top-bar-divider">|</span>
+            <a href="mailto:info@webdevelopmentsheffield.co.uk" class="top-bar-link">info@webdevelopmentsheffield.co.uk</a>
+        </div>
+    </div>
+
+    <nav>
+        <a class="nav-logo" href="/">
+            <img src="/assets/logo.png" alt="Web Development Sheffield Logo" class="logo-img">
+            <span class="logo-text">Web Development Sheffield</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#process">Process</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#faq">FAQs</a></li>
+            <li><a href="#blog">Blog</a></li>
+            <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+</header>
 
 <div class="article-header">
     <div class="article-header-grid"></div>
@@ -112,14 +137,73 @@
 </section>
 
 <footer>
-    <a class="footer-logo" href="/">WD<span>.</span>SHEFFIELD</a>
-    <p>© 2026 Web Development Sheffield. All rights reserved.</p>
-    <ul class="footer-links">
-        <li><a href="/#services">Services</a></li>
-        <li><a href="/#pricing">Pricing</a></li>
-        <li><a href="/#faq">FAQ</a></li>
-        <li><a href="/#contact">Contact</a></li>
-    </ul>
+    <div class="footer-container">
+
+        <div class="footer-brand">
+            <a class="nav-logo" href="/">
+                <img src="/assets/logo.png" alt="Web Development Sheffield Logo" class="logo-img">
+                <span class="logo-text">Web Development Sheffield</span>
+            </a>
+            <p>
+                Professional web design and web development services for
+                businesses in Sheffield and across the UK.
+            </p>
+            <div class="social-links">
+                <a href="https://www.linkedin.com/company/webdevelopmentsheffield/">LinkedIn</a>
+                <a href="https://www.facebook.com/profile.php?id=61591130790464">Facebook</a>
+                <a href="https://maps.app.goo.gl/odgEvB52S14oxhgo6">Google</a>
+            </div>
+        </div>
+
+        <div class="footer-column">
+            <h3>Contact</h3>
+            <p><strong>Web Development Sheffield</strong></p>
+            <address>
+                Millhouses<br>
+                Sheffield<br>
+                United Kingdom
+            </address>
+            <p><a href="tel:07864981381">07864981381</a></p>
+            <p>
+                <a href="mailto:info@webdevelopmentsheffield.co.uk">
+                    info@webdevelopmentsheffield.co.uk
+                </a>
+            </p>
+        </div>
+
+        <div class="footer-column">
+            <h3>Services</h3>
+            <ul>
+                <li><a href="/index.html#services">Web Design</a></li>
+                <li><a href="/index.html#services">Web Development</a></li>
+                <li><a href="/index.html#services">SEO</a></li>
+                <li><a href="/index.html#services">Website Maintenance</a></li>
+                <li><a href="/index.html#services">E-Commerce</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="/index.html#pricing">Pricing</a></li>
+                <li><a href="/index.html#process">Process</a></li>
+                <li><a href="/index.html#faq">FAQs</a></li>
+                <li><a href="/index.html#blog">Blog</a></li>
+                <li><a href="/index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>© 2026 Web Development Sheffield. All rights reserved.</p>
+
+        <p>
+            Listed in
+            <a href="https://www.sheffield-business.co.uk">
+                Sheffield Business Directory
+            </a>
+        </p>
+    </div>
 </footer>
 
 </body>
