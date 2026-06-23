@@ -56,14 +56,23 @@
         <div class="top-bar-content">
             <a href="tel:+447864981381" class="top-bar-link">07864981381</a>
             <span class="top-bar-divider">|</span>
-            <a href="mailto:info@webdevelopmentsheffield.co.uk" class="top-bar-link">info@webdevelopmentsheffield.co.uk</a>
+            <a href="mailto:info@webdevelopmentsheffield.co.uk" class="top-bar-link">
+                info@webdevelopmentsheffield.co.uk
+            </a>
         </div>
     </div>
 
-    <nav>
+    <nav class="main-nav">
+
         <a class="nav-logo" href="/">
-            <img src="assets/logo.png" alt="Web Development Sheffield Logo" class="logo-img">
-            <span class="logo-text">Web Development Sheffield</span>
+            <img
+                src="assets/logo.png"
+                alt="Web Development Sheffield Logo"
+                class="logo-img"
+            >
+            <span class="logo-text">
+                Web Development Sheffield
+            </span>
         </a>
 
         <ul class="nav-links">
@@ -75,23 +84,27 @@
             <li><a href="#blog">Blog</a></li>
             <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
         </ul>
+
         <button class="hamburger" id="hamburger" aria-label="Menu">
-            <span></span><span></span><span></span>
+            <span></span>
+            <span></span>
+            <span></span>
         </button>
+
+        <!-- MOBILE MENU -->
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="#services" onclick="closeMenu()">Services</a>
+            <a href="#process" onclick="closeMenu()">Process</a>
+            <a href="#pricing" onclick="closeMenu()">Pricing</a>
+            <a href="#faq" onclick="closeMenu()">FAQs</a>
+<!--            <a href="#testimonials" onclick="closeMenu()">Reviews</a>-->
+            <a href="#blog" onclick="closeMenu()">Blog</a>
+            <a href="#contact" onclick="closeMenu()">Get a Quote</a>
+        </div>
+
     </nav>
 
 </header>
-
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobile-menu">
-    <a href="#services" onclick="closeMenu()">Services</a>
-    <a href="#process" onclick="closeMenu()">Process</a>
-    <a href="#pricing" onclick="closeMenu()">Pricing</a>
-    <a href="#faq" onclick="closeMenu()">FAQs</a>
-<!--    <a href="#testimonials" onclick="closeMenu()">Reviews</a>-->
-    <a href="#blog" onclick="closeMenu()">Blog</a>
-    <a href="#contact" onclick="closeMenu()">Get a Quote</a>
-</div>
 
 <!-- HERO -->
 <section class="hero" id="home">

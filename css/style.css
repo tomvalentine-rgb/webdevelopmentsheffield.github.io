@@ -44,7 +44,7 @@ body {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: #fff;
+    background: var(--white);
 }
 
 /* Top bar */
@@ -156,16 +156,20 @@ nav {
     padding: 0;
 }
 
+.main-nav {
+    position: relative;
+}
+
 .mobile-menu {
     display: none;
     position: absolute;
     top: 100%;
     left: 0;
     width: 100%;
-    background: #fff;
+    background: var(--white);
     border-top: 1px solid var(--border);
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    z-index: 999;
+    z-index: 1000;
 }
 
 .mobile-menu.open {
@@ -174,6 +178,7 @@ nav {
 }
 
 .mobile-menu a {
+    display: block;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border);
     text-decoration: none;
