@@ -62,14 +62,21 @@
         <div class="top-bar-content">
             <a href="tel:+447864981381" class="top-bar-link">07864981381</a>
             <span class="top-bar-divider">|</span>
-            <a href="mailto:info@webdevelopmentsheffield.co.uk" class="top-bar-link">info@webdevelopmentsheffield.co.uk</a>
+            <a href="mailto:info@webdevelopmentsheffield.co.uk" class="top-bar-link">
+                info@webdevelopmentsheffield.co.uk
+            </a>
         </div>
     </div>
 
-    <nav>
+    <nav class="main-nav">
+
         <a class="nav-logo" href="/">
-            <img src="/assets/logo.png" alt="Web Development Sheffield Logo" class="logo-img">
-            <span class="logo-text">Web Development Sheffield</span>
+            <img src="/assets/logo.png"
+                 alt="Web Development Sheffield Logo"
+                 class="logo-img">
+            <span class="logo-text">
+                Web Development Sheffield
+            </span>
         </a>
 
         <ul class="nav-links">
@@ -80,9 +87,22 @@
             <li><a href="/index.html#blog">Blog</a></li>
             <li><a href="/index.html#contact" class="nav-cta">Get a Quote</a></li>
         </ul>
+
         <button class="hamburger" id="hamburger" aria-label="Menu">
-            <span></span><span></span><span></span>
+            <span></span>
+            <span></span>
+            <span></span>
         </button>
+
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="/index.html#services" onclick="closeMenu()">Services</a>
+            <a href="/index.html#process" onclick="closeMenu()">Process</a>
+            <a href="/index.html#pricing" onclick="closeMenu()">Pricing</a>
+            <a href="/index.html#faq" onclick="closeMenu()">FAQs</a>
+            <a href="/index.html#blog" onclick="closeMenu()">Blog</a>
+            <a href="/index.html#contact" onclick="closeMenu()">Get a Quote</a>
+        </div>
+
     </nav>
 
 </header>
@@ -306,10 +326,10 @@
             <h3>Quick Links</h3>
             <ul>
                 <li><a href="/index.html#pricing">Pricing</a></li>
-                <li><a href="/index.html#process">Process</a></li>
                 <li><a href="/index.html#faq">FAQs</a></li>
                 <li><a href="/index.html#blog">Blog</a></li>
                 <li><a href="/index.html#contact">Contact</a></li>
+                <li><a href="/privacy-policy.html">Privacy Policy</a></li>
             </ul>
         </div>
     </div>
@@ -325,6 +345,9 @@
         </p>
     </div>
 </footer>
+
+<script src="/js/main.js"></script>
+
 
 </body>
 </html>
