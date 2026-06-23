@@ -292,10 +292,10 @@ const FOOTER = `<footer>
             <h3>Quick Links</h3>
             <ul>
                 <li><a href="/index.html#pricing">Pricing</a></li>
-                <li><a href="/index.html#process">Process</a></li>
                 <li><a href="/index.html#faq">FAQs</a></li>
                 <li><a href="/index.html#blog">Blog</a></li>
                 <li><a href="/index.html#contact">Contact</a></li>
+                <li><a href="/privacy-policy.html">Privacy Policy</a></li>
             </ul>
         </div>
     </div>
