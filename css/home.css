@@ -511,7 +511,7 @@ h1 .accent { color: var(--accent); } /* softer blue — less "neon" */
 .contact-layout {
     display: grid;
     grid-template-columns: 1fr 1.3fr;
-    gap: 5rem;
+    gap: 2rem;
     align-items: start;
 }
 .contact-info h2 { margin-bottom: 1rem; }
@@ -531,7 +531,6 @@ h1 .accent { color: var(--accent); } /* softer blue — less "neon" */
 }
 .contact-detail-icon svg { width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 1.8; }
 .contact-detail-text strong { display: block; font-size: 0.85rem; font-weight: 500; color: var(--text); }
-/* Override inline style="color:var(--electric)" links that exist in the HTML */
 .contact-detail-text a { color: var(--accent) !important; font-size: 0.85rem; }
 
 .contact-form { display: flex; flex-direction: column; gap: 1rem; }
@@ -581,10 +580,6 @@ h1 .accent { color: var(--accent); } /* softer blue — less "neon" */
 .form-submit:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
 /* ─── RESPONSIVE ──────────────────────────────── */
-/* Original file declared several of these rules twice with
-   different values (.hero padding, .contact-layout gap,
-   .faq-layout gap, .blog-card-image height). Kept whichever
-   value won the original cascade — the one declared later. */
 
 @media (max-width: 768px) {
     .hero { padding: 8rem 1.25rem 3rem; }

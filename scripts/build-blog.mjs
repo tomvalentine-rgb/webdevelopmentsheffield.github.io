@@ -277,7 +277,7 @@ const FOOTER = `<footer>
             </a>
             <p>
                 Professional web design and web development services for
-                businesses in Sheffield and across the UK.
+                businesses in Sheffield and across the globe.
             </p>
             <div class="social-links">
                 <a href="https://www.linkedin.com/company/webdevelopmentsheffield/">LinkedIn</a>
