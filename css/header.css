@@ -155,32 +155,7 @@ nav {
     border-bottom: none;
 }
 
-/* Extra small phones */
-
-@media (max-width: 480px) {
-
-    /* Hide long email address */
-    .top-bar-link[href^="mailto"] {
-        display: none;
-    }
-
-    .logo-text {
-        font-size: 0.95rem;
-        max-width: 180px;
-    }
-
-    .logo-img {
-        width: 36px;
-        height: 36px;
-    }
-
-    nav {
-        padding: 0.75rem 1rem;
-    }
-}
-
 /* Desktop */
-
 @media (min-width: 1101px) {
 
     .top-bar {
@@ -259,7 +234,7 @@ nav {
     .top-bar-content { justify-content: center; flex-wrap: wrap; gap: 0.5rem; }
     .top-bar-divider { margin: 0 0.5rem; }
     .top-bar-link { font-size: 0.8rem; }
-    .top-bar-link[href^="mailto"] { display: none; }
+    .top-bar-link[href^="mailto"] { display: inline; }
 
     nav { padding: 1rem 1.5rem; }
     .nav-links { display: none; }
@@ -271,3 +246,4 @@ nav {
 
     .mobile-menu { top: 57px; }
 }
+

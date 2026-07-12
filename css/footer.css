@@ -10,7 +10,7 @@ footer {
 }
 
 .footer-container {
-    max-width: 1400px;
+    width: 100%
     margin: 0 auto;
     padding: 5rem 4rem;
     display: grid;
@@ -85,19 +85,27 @@ footer {
     font-size: 0.85rem;
 }
 
-/* Mobile (≤768px) */
+@media (max-width: 1200px) {
 
+    .footer-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 3rem;
+    }
+}
+
+/* Mobile (≤768px) */
 @media (max-width: 768px) {
-    footer { padding: 2rem 1.5rem; flex-direction: column; align-items: flex-start; }
 
     .footer-container {
         grid-template-columns: 1fr;
-        padding: 3rem 1.25rem;
-        gap: 2rem;
+        text-align: center;
+    }
+
+    .social-links {
+        justify-content: center;
     }
 
     .footer-bottom {
-        padding: 1.5rem 1.25rem;
         flex-direction: column;
         text-align: center;
     }
