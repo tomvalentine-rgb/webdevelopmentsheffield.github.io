@@ -1,0 +1,52 @@
+/* ═══════════════════════════════════════════════
+   VARIABLES.CSS
+   Reset, design tokens (colors/fonts), base html/body
+   Load this FIRST — every other file depends on these
+   custom properties.
+   ═══════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg:           #f8f7f4;       /* warm off-white — main page background */
+    --bg-mid:       #ffffff;       /* white — card & section surfaces */
+    --bg-light:     #f0eeea;       /* slightly darker warm off-white — top bar, alternating sections */
+    --bg-dark:      #0f172a;       /* deep navy — hero, footer, CTA sections */
+    --bg-dark-mid:  #1e293b;       /* slightly lighter navy — dark section cards */
+    --border:       #e2dfd8;       /* warm light grey border */
+    --border-dark:  #2a3a52;       /* border for dark sections */
+    --accent:       #2563eb;       /* confident blue — primary accent */
+    --accent-dim:   rgba(37,99,235,0.08);
+    --accent-hover: #1d4ed8;
+    --accent-hover-top-bar: #2596BE;
+    --text:         #1e293b;       /* near-black body text */
+    --muted:        #64748b;       /* secondary text */
+    --muted-dark:   #94a3b8;       /* muted text on dark backgrounds */
+    --white:        #ffffff;
+    --font-display: Georgia, 'Times New Roman', serif;
+    --font-body:    'DM Sans', system-ui, sans-serif;
+}
+
+html {
+    scroll-padding-top: 120px;
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Mobile overrides — prevents horizontal scroll on small screens */
+@media (max-width: 768px) {
+    html,
+    body {
+        width: 100%;
+        overflow-x: hidden;
+    }
+}
