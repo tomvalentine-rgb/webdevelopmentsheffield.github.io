@@ -209,7 +209,12 @@ const HEAD_COMMON = `    <meta charset="UTF-8">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">`;
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/article.css">`;
+
 
 const HEADER = `<header class="site-header">
 
@@ -272,7 +277,7 @@ const FOOTER = `<footer>
             </a>
             <p>
                 Professional web design and web development services for
-                businesses in Sheffield and across the UK.
+                businesses in Sheffield and across the globe.
             </p>
             <div class="social-links">
                 <a href="https://www.linkedin.com/company/webdevelopmentsheffield/">LinkedIn</a>
@@ -484,7 +489,7 @@ ${body}
   <section class="article-cta">
       <h2>Need a Website for Your Business?</h2>
       <p> We partner with businesses at every stage of growth to deliver custom websites that drive real results. </p>
-      <a href="/index.html/#contact" class="btn-primary">
+      <a href="/index.html#contact" class="btn-primary">
           Get a Quote
       </a>
 

@@ -1,0 +1,249 @@
+/* ═══════════════════════════════════════════════
+   HEADER.CSS
+   Site header: top bar, main nav, logo, hamburger,
+   mobile dropdown menu. Used on every page.
+   ═══════════════════════════════════════════════ */
+
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--white);
+}
+
+/* Top bar */
+
+.top-bar {
+    background: var(--white);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 0.5rem 1rem;
+}
+
+.top-bar-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.top-bar-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.top-bar-divider {
+    display: none;
+}
+
+/* Navigation */
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    box-sizing: border-box;
+}
+
+/* Logo */
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex: 1;
+    min-width: 0;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.logo-text {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--bg-dark);
+    line-height: 1.15;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* HAMBURGER */
+
+.hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    flex-shrink: 0;
+}
+
+.hamburger span {
+    width: 24px;
+    height: 2px;
+    background: #333;
+    transition: 0.3s;
+}
+
+.hamburger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Mobile menu */
+
+.nav-links {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.main-nav {
+    position: relative;
+}
+
+.mobile-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    z-index: 1000;
+}
+
+.mobile-menu.open {
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu a {
+    display: block;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+}
+
+.mobile-menu a:last-child {
+    border-bottom: none;
+}
+
+/* Desktop */
+@media (min-width: 1101px) {
+
+    .top-bar {
+        padding: 0.4rem 4rem;
+    }
+
+    .top-bar-content {
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .top-bar-divider {
+        display: inline-block;
+        color: var(--muted);
+    }
+
+    .top-bar-link[href^="mailto"] {
+        display: inline;
+    }
+
+    nav {
+        padding: 1rem 4rem;
+    }
+
+    .logo-img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .logo-text {
+        font-size: 1.4rem;
+        white-space: nowrap;
+    }
+
+    .hamburger {
+        display: none;
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+        color: var(--accent);
+    }
+
+    .nav-cta {
+        background: var(--accent);
+        color: white !important;
+        padding: 0.6rem 1.4rem;
+        border-radius: 5px;
+        white-space: nowrap;
+    }
+
+    .nav-cta:hover {
+        background: var(--accent-hover);
+    }
+}
+
+/* Tablet / mobile (≤768px) */
+/* Note: .hamburger visibility is controlled solely by the
+   min-width:1101px desktop breakpoint above — not repeated here. */
+
+@media (max-width: 768px) {
+    .top-bar { padding: 0.5rem 1rem; }
+    .top-bar-content { justify-content: center; flex-wrap: wrap; gap: 0.5rem; }
+    .top-bar-divider { margin: 0 0.5rem; }
+    .top-bar-link { font-size: 0.8rem; }
+    .top-bar-link[href^="mailto"] { display: inline; }
+
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+
+    .logo-text {
+        font-size: 0.95rem;
+        line-height: 1.1;
+    }
+
+    .mobile-menu { top: 57px; }
+}
+
