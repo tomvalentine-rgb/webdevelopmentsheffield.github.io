@@ -553,7 +553,7 @@ ${HEADER}
     <div style="position:relative; max-width:860px;">
         <a class="back-link" href="/#blog">Back</a>
         <p class="article-label">Web Development Sheffield — Blog</p>
-        <h1 id="post-title">FROM THE BLOG</h1>
+        <h1 id="post-title">From The Blog</h1>
         <div class="article-meta"><span>Tips, insights and advice for businesses looking to grow online.</span></div>
     </div>
 </div>
