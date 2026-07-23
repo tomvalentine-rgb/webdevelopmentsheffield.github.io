@@ -84,10 +84,6 @@ h2 {
     transform: translateY(-1px);
 }
 
-/* ─── RESPONSIVE ──────────────────────────────── */
-/* Original file set this twice (4rem 1.5rem, then 4rem 1.25rem) —
-   kept the later value since that's what actually won the cascade. */
-
 @media (max-width: 768px) {
     section { padding: 4rem 1.25rem; }
 }

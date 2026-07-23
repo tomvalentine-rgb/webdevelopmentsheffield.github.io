@@ -244,7 +244,7 @@ const HEADER = `<header class="site-header">
             <li><a href="/index.html#process">Process</a></li>
             <li><a href="/index.html#pricing">Pricing</a></li>
             <li><a href="/index.html#faq">FAQs</a></li>
-            <li><a href="/index.html#blog">Blog</a></li>
+            <li><a href="/blog">Blog</a></li>
             <li><a href="/index.html#contact" class="nav-cta">Get a Quote</a></li>
         </ul>
 
