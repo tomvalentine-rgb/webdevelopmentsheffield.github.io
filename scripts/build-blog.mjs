@@ -487,7 +487,7 @@ ${body}
 
 <section class="article-cta-wrapper">
   <section class="article-cta">
-      <h2>Need a Website for Your Business?</h2>
+      <h2>Need a website for your business?</h2>
       <p> We partner with businesses at every stage of growth to deliver custom websites that drive real results. </p>
       <a href="/index.html#contact" class="btn-primary">
           Get a Quote
