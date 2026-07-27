@@ -37,18 +37,17 @@
 
 .design-intro-layout {
   display: grid;
-  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
-  gap: clamp(3rem, 8vw, 8rem);
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
   align-items: start;
 }
 
 .design-intro-heading {
-  position: sticky;
-  top: 140px;
+  position: static;
 }
 
 .long-copy {
-  max-width: 780px;
+  max-width: none;
 }
 
 .long-copy p {
@@ -306,12 +305,7 @@
   }
 
   .design-intro-layout {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .design-intro-heading {
-    position: static;
+    gap: 1.25rem;
   }
 
   .design-types-grid,
