@@ -336,7 +336,8 @@
    so the redundant 768px copy has been dropped rather than repeated. */
 
 @media (max-width: 768px) {
-    .article-header { padding: 8rem 1.5rem 2.5rem; }
+    /* Clear fixed header: top bar stacks phone/email on small screens (~140px+) */
+    .article-header { padding: 11rem 1.5rem 2.5rem; }
     .article-body { padding: 2rem 1rem 0rem; width: 100%; max-width: 100%; }
     #post-title { font-size: clamp(2rem, 8vw, 3rem); }
     /* .post-hero-image img { height: 220px; } */

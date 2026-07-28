@@ -32,7 +32,9 @@ faqItems.forEach(item => {
 });
 
 /* ─── EMAILJS CONTACT FORM ────────────────────── */
-emailjs.init('FzhcE3c4OivFCtrVc');
+if (typeof emailjs !== 'undefined') {
+    emailjs.init('FzhcE3c4OivFCtrVc');
+}
 
 function handleSubmit(e) {
     e.preventDefault();
