@@ -40,8 +40,9 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.25rem;
-  max-width: 1800px;
-  margin: 3rem auto 0;
+  width: 100%;
+  max-width: none;
+  margin: 3rem 0 0;
 }
 
 .service-feature {
@@ -129,10 +130,16 @@
   gap: 0.7rem;
 }
 
+#core-services {
+  background: var(--bg);
+}
+
 #why-us {
   background: var(--bg-mid);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+}
+
+.article-cta-wrapper {
+  background: var(--bg);
 }
 
 .capabilities-grid,
@@ -140,8 +147,9 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
-  max-width: 1400px;
-  margin: 3rem auto 0;
+  width: 100%;
+  max-width: none;
+  margin: 3rem 0 0;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -219,8 +227,9 @@
 }
 
 .services-cta-inner {
-  max-width: 1250px;
-  margin: 0 auto;
+  max-width: none;
+  width: 100%;
+  margin: 0;
   padding: clamp(3rem, 7vw, 6rem);
   overflow: hidden;
   border: 1px solid var(--border);
@@ -228,6 +237,7 @@
   background: var(--bg-light);
   text-align: center;
   position: relative;
+  box-sizing: border-box;
 }
 
 .services-cta-inner::after {
