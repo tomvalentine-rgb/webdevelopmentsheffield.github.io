@@ -31,8 +31,9 @@
 }
 
 .content-width {
-  width: min(100%, 1400px);
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 
 .design-intro-layout {
@@ -62,12 +63,16 @@
   font-weight: 600;
 }
 
-.design-types-section,
-.included-section,
+.design-types-section {
+  background: var(--bg-mid);
+}
+
+.included-section {
+  background: var(--bg);
+}
+
 .faq-section {
   background: var(--bg-mid);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
 }
 
 .design-types-grid,
@@ -174,8 +179,24 @@
 }
 
 .seo-copy {
-  max-width: 930px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+/* Alternating section backgrounds to match the homepage rhythm:
+   hero (light) → intro (bg) → types (mid) → included (bg) →
+   process (mid) → seo (bg) → related (mid) → cta (bg) */
+main > section:has(.seo-copy) {
+  background: var(--bg);
+}
+
+main > section:has(.related-service-grid) {
+  background: var(--bg-mid);
+}
+
+main > #process {
+  background: var(--bg-mid);
 }
 
 .seo-copy h2 {
@@ -251,7 +272,7 @@
   padding: 2rem;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: var(--bg-mid);
+  background: var(--bg);
   color: inherit;
   text-decoration: none;
   transition: 0.2s;
@@ -283,6 +304,19 @@
   font-weight: 600;
 }
 
+/* Match homepage: full-bleed sections with shared 4rem side padding */
+.article-cta-wrapper {
+  padding: 6rem 4rem;
+  background: var(--bg);
+}
+
+.article-cta-wrapper .article-cta {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
 @media (max-width: 1000px) {
   .design-types-grid,
   .included-grid,
@@ -306,6 +340,10 @@
 
   .design-intro-layout {
     gap: 1.25rem;
+  }
+
+  .article-cta-wrapper {
+    padding: 4rem 1.25rem;
   }
 
   .design-types-grid,
