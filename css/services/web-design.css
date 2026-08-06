@@ -209,8 +209,8 @@ main > #process {
 
 .seo-copy p {
   margin-bottom: 1.25rem;
-  color: var(--muted);
-  font-size: 1.02rem;
+  /* color: var(--muted); */
+  /* font-size: 1.02rem; */
   line-height: 1.9;
 }
 
