@@ -151,7 +151,30 @@ h1 .accent { color: var(--accent); } /* softer blue — less "neon" */
     margin-bottom: 0.5rem;
     color: var(--bg-dark);
 }
-.step-content p { font-size: 0.9rem; color: var(--muted); }
+
+.step-content > a {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.step-content p {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.step-content p a {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: normal;
+    color: var(--accent);
+    text-decoration: underline;
+}
 
 /* ─── PRICING ─────────────────────────────────── */
 #pricing { background: var(--bg); }
