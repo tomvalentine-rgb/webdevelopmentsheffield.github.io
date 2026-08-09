@@ -18,23 +18,39 @@ function closeMenu() {
     mobileMenu.classList.remove('open');
 }
 
-/* ─── FAQ / PRICE ACCORDION ───────────────────── */
-function setupAccordion(selector) {
-    const items = document.querySelectorAll(selector);
+/* ─── FAQ ACCORDION ───────────────────────────── */
+const faqItems = document.querySelectorAll('.faq-item');
 
-    items.forEach(item => {
-        item.addEventListener('toggle', () => {
-            if (!item.open) return;
+faqItems.forEach(item => {
+    item.addEventListener('toggle', () => {
+        if (!item.open) return;
 
-            items.forEach(otherItem => {
-                if (otherItem !== item) otherItem.open = false;
-            });
+        faqItems.forEach(otherItem => {
+            if (otherItem !== item) otherItem.open = false;
         });
     });
-}
+});
 
-setupAccordion('.faq-item');
-setupAccordion('.price-toggle');
+/* ─── PRICE TOGGLES ───────────────────────────── */
+const priceToggles = document.querySelectorAll('.price-toggle');
+
+priceToggles.forEach(item => {
+    const trigger = item.querySelector('.price-toggle-trigger');
+    if (!trigger) return;
+
+    trigger.addEventListener('click', () => {
+        const opening = !item.classList.contains('is-open');
+
+        priceToggles.forEach(other => {
+            if (other === item) return;
+            other.classList.remove('is-open');
+            other.querySelector('.price-toggle-trigger')?.setAttribute('aria-expanded', 'false');
+        });
+
+        item.classList.toggle('is-open', opening);
+        trigger.setAttribute('aria-expanded', opening ? 'true' : 'false');
+    });
+});
 
 /* ─── EMAILJS CONTACT FORM ────────────────────── */
 if (typeof emailjs !== 'undefined') {

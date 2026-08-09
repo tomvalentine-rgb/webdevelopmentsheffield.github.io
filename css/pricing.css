@@ -46,19 +46,20 @@
     border-bottom: 1px solid var(--border);
 }
 
-.price-toggle summary {
+.price-toggle-trigger {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
+    width: 100%;
     min-height: 6.5rem;
     padding: 1.5rem 0;
+    background: none;
+    border: none;
+    text-align: left;
     cursor: pointer;
-    list-style: none;
-}
-
-.price-toggle summary::-webkit-details-marker {
-    display: none;
+    font: inherit;
+    color: inherit;
 }
 
 .price-toggle-title {
@@ -68,11 +69,13 @@
     line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--bg-dark);
+    transition: color 0.25s ease;
 }
 
 .price-toggle-title em {
     font-style: normal;
     color: var(--muted);
+    transition: color 0.25s ease;
 }
 
 .price-toggle-icon {
@@ -82,7 +85,7 @@
     border: 1px solid var(--border);
     border-radius: 8px;
     position: relative;
-    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    transition: border-color 0.25s ease, background 0.25s ease, transform 0.35s ease;
 }
 
 .price-toggle-icon::before,
@@ -101,18 +104,37 @@
 }
 
 .price-toggle:hover .price-toggle-title,
-.price-toggle[open] .price-toggle-title {
+.price-toggle.is-open .price-toggle-title {
+    color: var(--accent);
+}
+
+.price-toggle.is-open .price-toggle-title em {
     color: var(--accent);
 }
 
 .price-toggle:hover .price-toggle-icon,
-.price-toggle[open] .price-toggle-icon {
+.price-toggle.is-open .price-toggle-icon {
     border-color: var(--accent);
     background: var(--accent-dim);
 }
 
-.price-toggle[open] .price-toggle-icon {
+.price-toggle.is-open .price-toggle-icon {
     transform: rotate(45deg);
+}
+
+.price-toggle-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s ease;
+}
+
+.price-toggle.is-open .price-toggle-panel {
+    grid-template-rows: 1fr;
+}
+
+.price-toggle-clip {
+    overflow: hidden;
+    min-height: 0;
 }
 
 .price-toggle-body {
@@ -136,17 +158,17 @@
     font-weight: 300;
 }
 
-.pricing-packages {
-    background: var(--bg);
-}
-
-.pricing-packages .pricing-grid {
-    max-width: none;
-    margin-top: 3rem;
+@media (prefers-reduced-motion: reduce) {
+    .price-toggle-panel,
+    .price-toggle-icon,
+    .price-toggle-title,
+    .price-toggle-title em {
+        transition: none;
+    }
 }
 
 .pricing-terms {
-    background: var(--bg-mid);
+    background: var(--bg);
 }
 
 .pricing-terms .payment-terms-container {
@@ -156,11 +178,11 @@
 }
 
 .pricing-faq {
-    background: var(--bg);
+    background: var(--bg-mid);
 }
 
 .pricing-page .article-cta-wrapper {
-    background: var(--bg-mid);
+    background: var(--bg);
 }
 
 @media (max-width: 768px) {
@@ -169,7 +191,7 @@
         padding-bottom: 4rem;
     }
 
-    .price-toggle summary {
+    .price-toggle-trigger {
         min-height: 5.25rem;
         padding: 1.25rem 0;
         gap: 1rem;
