@@ -259,7 +259,7 @@ const HEADER = `<header class="site-header">
             <a href="/index.html#process" onclick="closeMenu()">Process</a>
             <a href="/index.html#pricing" onclick="closeMenu()">Pricing</a>
             <a href="/index.html#faq" onclick="closeMenu()">FAQs</a>
-            <a href="/index.html#blog" onclick="closeMenu()">Blog</a>
+            <a href="/blog" onclick="closeMenu()">Blog</a>
             <a href="/index.html#contact" onclick="closeMenu()">Get a Quote</a>
         </div>
 
@@ -318,7 +318,7 @@ const FOOTER = `<footer>
             <ul>
                 <li><a href="/index.html#pricing">Pricing</a></li>
                 <li><a href="/index.html#faq">FAQs</a></li>
-                <li><a href="/index.html#blog">Blog</a></li>
+                <li><a href="/blog">Blog</a></li>
                 <li><a href="/index.html#contact">Contact</a></li>
                 <li><a href="/privacy-policy.html">Privacy Policy</a></li>
             </ul>
@@ -465,7 +465,7 @@ ${HEADER}
 <div class="article-header">
     <div class="article-header-grid"></div>
     <div style="position:relative; max-width:860px;">
-        <a class="back-link" href="/#blog">Back</a>
+        <a class="back-link" href="/blog">Back</a>
         <p class="article-label">Web Development Sheffield — Blog</p>
         <h1 id="post-title">${escapeHtml(post.title)}</h1>
         <div class="article-meta">${date ? `<span>Published ${escapeHtml(date)}</span>` : ''}</div>
@@ -551,7 +551,7 @@ ${HEADER}
 <div class="article-header">
     <div class="article-header-grid"></div>
     <div style="position:relative; max-width:860px;">
-        <a class="back-link" href="/#blog">Back</a>
+        <a class="back-link" href="/">Back</a>
         <p class="article-label">Web Development Sheffield — Blog</p>
         <h1 id="post-title">From The Blog</h1>
         <div class="article-meta"><span>Tips, insights and advice for businesses looking to grow online.</span></div>
