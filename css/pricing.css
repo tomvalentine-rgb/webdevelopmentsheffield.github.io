@@ -38,53 +38,102 @@
     background: var(--bg-mid);
 }
 
-.pricing-guide-list {
-    display: flex;
-    flex-direction: column;
+.price-toggles {
     border-top: 1px solid var(--border);
 }
 
-.pricing-guide-item {
-    display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.8fr);
-    gap: 2rem;
-    align-items: center;
-    padding: 2.25rem 0;
+.price-toggle {
     border-bottom: 1px solid var(--border);
 }
 
-.pricing-guide-item h3 {
+.price-toggle summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 6.5rem;
+    padding: 1.5rem 0;
+    cursor: pointer;
+    list-style: none;
+}
+
+.price-toggle summary::-webkit-details-marker {
+    display: none;
+}
+
+.price-toggle-title {
     font-family: var(--font-display);
-    font-size: clamp(1.5rem, 2.4vw, 2rem);
-    line-height: 1.15;
+    font-size: clamp(1.7rem, 3.4vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--bg-dark);
-    margin-bottom: 0.6rem;
 }
 
-.pricing-guide-item p {
+.price-toggle-title em {
+    font-style: normal;
     color: var(--muted);
-    font-size: 1rem;
-    line-height: 1.75;
-    max-width: 640px;
 }
 
-.pricing-guide-price {
+.price-toggle-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.price-toggle-icon::before,
+.price-toggle-icon::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 0.95rem;
+    height: 1.5px;
+    background: var(--accent);
+    transform: translate(-50%, -50%);
+}
+
+.price-toggle-icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.price-toggle:hover .price-toggle-title,
+.price-toggle[open] .price-toggle-title {
+    color: var(--accent);
+}
+
+.price-toggle:hover .price-toggle-icon,
+.price-toggle[open] .price-toggle-icon {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+}
+
+.price-toggle[open] .price-toggle-icon {
+    transform: rotate(45deg);
+}
+
+.price-toggle-body {
+    padding: 0 4rem 2rem 0;
+    max-width: 720px;
+}
+
+.price-toggle-cost {
     font-family: var(--font-display);
-    font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
     line-height: 1.1;
     font-weight: 700;
     color: var(--bg-dark);
-    text-align: right;
+    margin-bottom: 0.75rem;
 }
 
-.pricing-guide-price span {
-    display: block;
-    margin-top: 0.35rem;
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    font-weight: 400;
+.price-toggle-body p:last-child {
     color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    font-weight: 300;
 }
 
 .pricing-packages {
@@ -120,13 +169,13 @@
         padding-bottom: 4rem;
     }
 
-    .pricing-guide-item {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-        padding: 1.75rem 0;
+    .price-toggle summary {
+        min-height: 5.25rem;
+        padding: 1.25rem 0;
+        gap: 1rem;
     }
 
-    .pricing-guide-price {
-        text-align: left;
+    .price-toggle-body {
+        padding: 0 0 1.75rem;
     }
 }

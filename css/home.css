@@ -246,9 +246,9 @@ h1 .accent { color: var(--accent); } /* softer blue — less "neon" */
 }
 
 .payment-terms-container {
-    margin-top: 6rem;
-    border-top: 1px solid var(--border);
-    padding-top: 4rem;
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
 }
 
 .payment-milestones {

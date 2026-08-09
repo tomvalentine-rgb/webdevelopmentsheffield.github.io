@@ -18,18 +18,23 @@ function closeMenu() {
     mobileMenu.classList.remove('open');
 }
 
-/* ─── FAQ ACCORDION ───────────────────────────── */
-const faqItems = document.querySelectorAll('.faq-item');
+/* ─── FAQ / PRICE ACCORDION ───────────────────── */
+function setupAccordion(selector) {
+    const items = document.querySelectorAll(selector);
 
-faqItems.forEach(item => {
-    item.addEventListener('toggle', () => {
-        if (!item.open) return;
+    items.forEach(item => {
+        item.addEventListener('toggle', () => {
+            if (!item.open) return;
 
-        faqItems.forEach(otherItem => {
-            if (otherItem !== item) otherItem.open = false;
+            items.forEach(otherItem => {
+                if (otherItem !== item) otherItem.open = false;
+            });
         });
     });
-});
+}
+
+setupAccordion('.faq-item');
+setupAccordion('.price-toggle');
 
 /* ─── EMAILJS CONTACT FORM ────────────────────── */
 if (typeof emailjs !== 'undefined') {
