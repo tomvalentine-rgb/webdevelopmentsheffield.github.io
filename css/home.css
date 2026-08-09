@@ -10,8 +10,8 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding: 12rem 4rem 4rem;
+    justify-content: flex-start;
+    padding: 13rem 4rem 4rem;
     position: relative;
     overflow: hidden;
     background: var(--bg-light);
@@ -605,7 +605,7 @@ h1 .accent { color: var(--accent); } /* softer blue — less "neon" */
 /* ─── RESPONSIVE ──────────────────────────────── */
 
 @media (max-width: 768px) {
-    .hero { padding: 8rem 1.25rem 3rem; }
+    .hero { padding: 13rem 1.25rem 4rem; }
     h1 { font-size: clamp(2.5rem, 12vw, 4rem); }
 
     .contact-layout { grid-template-columns: 1fr; gap: 2rem; }
