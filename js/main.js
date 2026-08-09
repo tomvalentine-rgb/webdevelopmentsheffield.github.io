@@ -31,6 +31,27 @@ faqItems.forEach(item => {
     });
 });
 
+/* ─── PRICE TOGGLES ───────────────────────────── */
+const priceToggles = document.querySelectorAll('.price-toggle');
+
+priceToggles.forEach(item => {
+    const trigger = item.querySelector('.price-toggle-trigger');
+    if (!trigger) return;
+
+    trigger.addEventListener('click', () => {
+        const opening = !item.classList.contains('is-open');
+
+        priceToggles.forEach(other => {
+            if (other === item) return;
+            other.classList.remove('is-open');
+            other.querySelector('.price-toggle-trigger')?.setAttribute('aria-expanded', 'false');
+        });
+
+        item.classList.toggle('is-open', opening);
+        trigger.setAttribute('aria-expanded', opening ? 'true' : 'false');
+    });
+});
+
 /* ─── EMAILJS CONTACT FORM ────────────────────── */
 if (typeof emailjs !== 'undefined') {
     emailjs.init('FzhcE3c4OivFCtrVc');
