@@ -578,7 +578,7 @@ function sitemap(posts) {
     { url: '/privacy-policy/', lastmod: '2026-08-17' },
     { url: '/services/', lastmod: '2026-08-17' },
     { url: '/services/web-design-sheffield.html', lastmod: '2026-08-17' },
-    { url: '/services/website-maintenance-sheffield.html', lastmod: '2026-08-17' },
+    { url: '/services/website-development-sheffield.html', lastmod: '2026-08-17' },
     { url: '/services/website-support-sheffield.html', lastmod: '2026-08-17' },
     { url: '/services/software-development-sheffield.html', lastmod: '2026-08-17' },
   ];
