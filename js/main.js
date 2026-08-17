@@ -31,6 +31,38 @@ faqItems.forEach(item => {
     });
 });
 
+/* ─── ARTICLE TOC ACTIVE SECTION ──────────────── */
+const tocLinks = document.querySelectorAll('.article-toc a[href^="#"]');
+
+if (tocLinks.length) {
+    const sections = [...tocLinks]
+        .map((link) => document.getElementById(link.getAttribute('href').slice(1)))
+        .filter(Boolean);
+
+    const setActiveLink = (id) => {
+        tocLinks.forEach((link) => {
+            link.classList.toggle('is-active', link.getAttribute('href') === `#${id}`);
+        });
+    };
+
+    const updateActiveSection = () => {
+        const marker = 140;
+        let active = sections[0];
+
+        for (const section of sections) {
+            if (section.getBoundingClientRect().top <= marker) {
+                active = section;
+            }
+        }
+
+        if (active) setActiveLink(active.id);
+    };
+
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection);
+    updateActiveSection();
+}
+
 /* ─── EMAILJS CONTACT FORM ────────────────────── */
 if (typeof emailjs !== 'undefined') {
     emailjs.init('FzhcE3c4OivFCtrVc');

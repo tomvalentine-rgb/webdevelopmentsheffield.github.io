@@ -269,7 +269,6 @@ const HEADER = `<header class="site-header">
 
 const FOOTER = `<footer>
     <div class="footer-container">
-
         <div class="footer-brand">
             <a class="nav-logo" href="/">
                 <img src="/assets/logo.png" alt="Web Development Sheffield Logo" class="logo-img">
@@ -277,12 +276,12 @@ const FOOTER = `<footer>
             </a>
             <p>
                 Professional web design and web development services for
-                businesses in Sheffield and across the globe.
+                businesses in Sheffield and across the world.
             </p>
             <div class="social-links">
                 <a href="https://www.linkedin.com/company/webdevelopmentsheffield/">LinkedIn</a>
                 <a href="https://www.facebook.com/profile.php?id=61591130790464">Facebook</a>
-                <a href="https://maps.app.goo.gl/odgEvB52S14oxhgo6">Google</a>
+                <a href="https://maps.app.goo.gl/FXx9kFdjksv7dSPq9">Google</a>
             </div>
         </div>
 
@@ -303,13 +302,13 @@ const FOOTER = `<footer>
         </div>
 
         <div class="footer-column">
-            <h3>Services</h3>
+            <h3><a href="/services">Services</a></h3>
             <ul>
-                <li><a href="/services">Web Design</a></li>
-                <li><a href="/services">Web Development</a></li>
-                <li><a href="/services">SEO</a></li>
-                <li><a href="/services">Website Maintenance</a></li>
-                <li><a href="/services">E-Commerce</a></li>
+                <li><a href="/services/web-design-sheffield.html" title="Web Design Sheffield">Web Design</a></li>
+                <li><a href="/services/software-development-sheffield.html" title="Software Development Sheffield">Software Development</a></li>
+                <li><a href="/services" title="Search Engine Optimization Sheffield">SEO</a></li>
+                <li><a href="/services/website-maintenance-sheffield.html" title="Website Maintenance Sheffield">Website Maintenance</a></li>
+                <li><a href="/services/website-support-sheffield.html" title="Website Support Sheffield">Website Support</a></li>
             </ul>
         </div>
 
@@ -573,19 +572,48 @@ ${FOOTER}
 }
 
 function sitemap(posts) {
+  // Define all static, non-changing URLs here
+  const staticRoutes = [
+    { url: '/', lastmod: null },
+    { url: '/privacy-policy/', lastmod: '2026-08-17' },
+    { url: '/services/', lastmod: '2026-08-17' },
+    { url: '/services/web-design-sheffield.html', lastmod: '2026-08-17' },
+    { url: '/services/website-maintenance-sheffield.html', lastmod: '2026-08-17' },
+    { url: '/services/website-support-sheffield.html', lastmod: '2026-08-17' },
+    { url: '/services/software-development-sheffield.html', lastmod: '2026-08-17' },
+  ];
+
+  // 2. Find the latest update date across all blog posts
   const latest = posts
     .map((p) => p._updatedAt || p.publishedAt)
     .filter(Boolean)
     .sort()
     .pop();
-  const urls = [
-    `  <url>\n    <loc>${SITE_URL}/</loc>\n  </url>`,
-    `  <url>\n    <loc>${SITE_URL}/blog/</loc>${latest ? `\n    <lastmod>${isoDay(latest)}</lastmod>` : ''}\n  </url>`,
-    ...posts.map((p) => {
-      const lm = p._updatedAt || p.publishedAt;
-      return `  <url>\n    <loc>${SITE_URL}/blog/${p.slug}/</loc>${lm ? `\n    <lastmod>${isoDay(lm)}</lastmod>` : ''}\n  </url>`;
-    }),
-  ];
+
+  // 3. Map static routes to XML <url> strings
+  const staticUrls = staticRoutes.map(
+    (page) =>
+      `  <url>\n    <loc>${SITE_URL}${page.url}</loc>${
+        page.lastmod ? `\n    <lastmod>${isoDay(page.lastmod)}</lastmod>` : ''
+      }\n  </url>`
+  );
+
+  // 4. Map the blog index page using the latest post's date
+  const blogIndexUrl = `  <url>\n    <loc>${SITE_URL}/blog/</loc>${
+    latest ? `\n    <lastmod>${isoDay(latest)}</lastmod>` : ''
+  }\n  </url>`;
+
+  // 5. Map individual blog posts
+  const postUrls = posts.map((p) => {
+    const lm = p._updatedAt || p.publishedAt;
+    return `  <url>\n    <loc>${SITE_URL}/blog/${p.slug}/</loc>${
+      lm ? `\n    <lastmod>${isoDay(lm)}</lastmod>` : ''
+    }\n  </url>`;
+  });
+
+  // Combine static pages, blog index, and all dynamic post URLs
+  const urls = [...staticUrls, blogIndexUrl, ...postUrls];
+
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
 }
 
