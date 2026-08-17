@@ -54,8 +54,15 @@
 }
 .article-toc ul {list-style: none;}
 .article-toc li {margin-bottom: 0.75rem;}
-.article-toc a {color: var(--muted); text-decoration: none;}
-.article-toc a:hover {color: var(--accent);}
+.article-toc a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.article-toc a:hover,
+.article-toc a.is-active {
+    color: var(--accent);
+}
 
 .back-link {
     display: inline-flex; align-items: center; gap: 0.5rem;
