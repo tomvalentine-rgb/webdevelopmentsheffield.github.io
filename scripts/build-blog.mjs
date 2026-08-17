@@ -127,7 +127,12 @@ function categoryTag(post) {
 }
 
 function categoryFilters(posts) {
-  const seen = new Map();
+  const seen = new Map([
+    ['web-development', 'Web Development'],
+    ['web-design', 'Web Design'],
+    ['seo', 'SEO'],
+  ]);
+
   for (const post of posts) {
     const category = postCategory(post);
     if (category && !seen.has(category.slug)) {
@@ -142,8 +147,6 @@ function categoryFilters(posts) {
         `    <button class="blog-filter" data-filter="${escapeAttr(slug)}" aria-pressed="false">${escapeHtml(label)}</button>`,
     ),
   ];
-
-  if (seen.size === 0) return '';
 
   return `<div class="blog-filters">\n${buttons.join('\n')}\n</div>`;
 }
