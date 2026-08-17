@@ -680,11 +680,11 @@ function blogIndexPage(posts) {
       gtag('js', new Date());
       gtag('config', 'G-1JNH702LBD');
     </script>
-    <title>Blog | Web Development Sheffield</title>
+    <title>Web Design Articles &amp; Guides | Web Development Sheffield</title>
     <meta name="description" content="${escapeAttr(description)}">
     <link rel="canonical" href="${url}">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Blog | Web Development Sheffield">
+    <meta property="og:title" content="Web Design Articles &amp; Guides | Web Development Sheffield">
     <meta property="og:description" content="${escapeAttr(description)}">
     <meta property="og:url" content="${url}">
     <meta name="twitter:card" content="summary_large_image">
@@ -709,7 +709,7 @@ ${HEADER}
     <div style="position:relative; max-width:860px;">
         <a class="back-link" href="/">Back</a>
         <p class="article-label">Web Development Sheffield — Blog</p>
-        <h1 id="post-title">From The Blog</h1>
+        <h1 id="post-title">Web Design Articles</h1>
         <div class="article-meta"><span>Tips, insights and advice for businesses looking to grow online.</span></div>
     </div>
 </div>
