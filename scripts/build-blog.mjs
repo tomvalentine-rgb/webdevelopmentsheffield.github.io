@@ -36,8 +36,28 @@ const GROQ = `*[_type == "post"] | order(publishedAt desc){
   publishedAt,
   _updatedAt,
   body,
+  category,
   "imageUrl": mainImage.asset->url
 }`;
+
+const CATEGORIES = {
+  'web-development': 'Web Development',
+  'web-design': 'Web Design',
+  seo: 'SEO',
+};
+
+const CATEGORY_BY_SLUG = {
+  'do-you-actually-need-a-blog-on-your-website': 'web-development',
+  'how-ai-search-is-changing-the-way-people-find-local-businesses': 'seo',
+  'how-to-get-your-business-to-show-up-on-google-maps': 'seo',
+  'why-local-businesses-are-losing-customers-to-competitors-online': 'web-design',
+  'what-makes-a-good-business-website': 'web-design',
+  'what-is-local-seo-and-why-does-it-matter': 'seo',
+  '5-signs-your-business-website-needs-updating': 'web-design',
+  'why-isnt-my-business-showing-up-on-google': 'seo',
+  'can-social-media-replace-a-website': 'web-development',
+  'why-your-website-isnt-converting-and-how-to-fix-it': 'web-design',
+};
 
 /* ── helpers ─────────────────────────────────────────────── */
 
@@ -78,6 +98,35 @@ function truncate(text, max) {
   if (!text) return '';
   if (text.length <= max) return text;
   return text.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
+}
+
+function categorySlug(value) {
+  const raw = String(value ?? '').trim().toLowerCase();
+  if (!raw) return '';
+  if (CATEGORIES[raw]) return raw;
+  if (raw.includes('seo')) return 'seo';
+  if (raw.includes('design')) return 'web-design';
+  if (raw.includes('development') || raw.includes('dev')) return 'web-development';
+  return '';
+}
+
+function inferCategory(post) {
+  const haystack = `${post.title || ''} ${firstParagraph(post.body)}`.toLowerCase();
+  if (/\bseo\b|google maps|google|search/.test(haystack)) return 'seo';
+  if (/\bdesign\b|converting|update/.test(haystack)) return 'web-design';
+  return 'web-development';
+}
+
+function postCategory(post) {
+  return (
+    categorySlug(post.category) ||
+    CATEGORY_BY_SLUG[post.slug] ||
+    inferCategory(post)
+  );
+}
+
+function categoryLabel(slug) {
+  return CATEGORIES[slug] || CATEGORIES['web-development'];
 }
 
 /**
@@ -357,6 +406,74 @@ function card(post) {
 </article>`;
 }
 
+function indexCard(post) {
+  const date = fmtDate(post.publishedAt);
+  const summary = truncate(firstParagraph(post.body), 150) || 'Click to read the full article…';
+  const href = `/blog/${encodeURIComponent(post.slug)}/`;
+  const category = postCategory(post);
+  const label = categoryLabel(category);
+  const image = post.imageUrl
+    ? `<div class="blog-card-image"><img src="${escapeAttr(post.imageUrl)}?w=300&h=220&fit=crop" alt="${escapeAttr(post.title)}"></div>`
+    : NO_IMAGE_SVG;
+
+  return `<article class="blog-card is-visible" data-category="${escapeAttr(category)}">
+    <a href="${href}">
+        ${image}
+    </a>
+    <div class="blog-card-content">
+        <span class="card-tag">${escapeHtml(label)}</span>
+        ${date ? `<p class="card-date">${escapeHtml(date)}</p>` : ''}
+        <h2><a href="${href}">${escapeHtml(post.title)}</a></h2>
+        <p>${escapeHtml(summary)}</p>
+        <a class="read-more" href="${href}">Read More →</a>
+    </div>
+</article>`;
+}
+
+function latestSection(posts) {
+  const [primary, ...rest] = posts;
+  if (!primary) return '';
+
+  const secondary = rest.slice(0, 2);
+  const primaryHref = `/blog/${encodeURIComponent(primary.slug)}/`;
+  const primaryLabel = categoryLabel(postCategory(primary));
+  const primaryImage = primary.imageUrl
+    ? `<img src="${escapeAttr(primary.imageUrl)}?w=800&h=600&fit=crop" alt="${escapeAttr(primary.title)}">`
+    : '';
+
+  const secondaryItems = secondary.map((post) => {
+    const href = `/blog/${encodeURIComponent(post.slug)}/`;
+    const label = categoryLabel(postCategory(post));
+    const image = post.imageUrl
+      ? `<img src="${escapeAttr(post.imageUrl)}?w=220&h=176&fit=crop" alt="${escapeAttr(post.title)}">`
+      : '';
+    return `            <a class="latest-secondary-item" href="${href}">
+                ${image}
+                <div>
+                    <span class="card-tag">${escapeHtml(label)}</span>
+                    <h3>${escapeHtml(post.title)}</h3>
+                </div>
+            </a>`;
+  }).join('\n');
+
+  return `<section class="latest-section">
+    <p class="latest-heading">Latest Articles</p>
+    <div class="latest-grid">
+        <a class="latest-primary" href="${primaryHref}">
+            ${primaryImage}
+            <div class="latest-primary-content">
+                <span class="card-tag">${escapeHtml(primaryLabel)}</span>
+                <h2>${escapeHtml(primary.title)}</h2>
+                ${primary.publishedAt ? `<span class="card-date">${escapeHtml(fmtDate(primary.publishedAt))}</span>` : ''}
+            </div>
+        </a>
+        <div class="latest-secondary">
+${secondaryItems}
+        </div>
+    </div>
+</section>`;
+}
+
 /* ── related posts section ───────────────────────────────── */
 
 /**
@@ -509,20 +626,48 @@ ${FOOTER}
 
 function blogIndexPage(posts) {
   const url = `${SITE_URL}/blog/`;
-  const cards = posts.map(card).join('\n');
-  const ld = jsonLd({
+  const description = 'Practical articles on web design, web development, SEO and website performance for Sheffield businesses.';
+  const cards = posts.map(indexCard).join('\n\n');
+  const latest = latestSection(posts);
+  const breadcrumbLd = jsonLd({
     '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'Blog | Web Development Sheffield',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: url },
+    ],
+  });
+  const orgLd = jsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${SITE_URL}/#organization`,
+    name: 'Web Development Sheffield',
+    url: `${SITE_URL}/`,
+    logo: `${SITE_URL}/assets/logo.png`,
+  });
+  const blogLd = jsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    '@id': `${url}#blog`,
+    name: 'Web Development Sheffield Blog',
     url,
-    description:
-      'Practical articles on web design, web development, SEO and website performance for Sheffield businesses.',
-    hasPart: posts.map((p) => ({
-      '@type': 'BlogPosting',
-      headline: p.title,
-      url: `${SITE_URL}/blog/${p.slug}/`,
-      datePublished: p.publishedAt,
-    })),
+    description,
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    blogPost: posts.map((p) => {
+      const category = postCategory(p);
+      return {
+        '@type': 'BlogPosting',
+        headline: p.title,
+        url: `${SITE_URL}/blog/${p.slug}/`,
+        datePublished: p.publishedAt,
+        dateModified: p._updatedAt || p.publishedAt,
+        ...(p.imageUrl ? { image: `${p.imageUrl}?w=1200&h=630&fit=crop` } : {}),
+        description: truncate(firstParagraph(p.body), 155),
+        articleSection: categoryLabel(category),
+        author: { '@id': `${SITE_URL}/#organization` },
+        publisher: { '@id': `${SITE_URL}/#organization` },
+      };
+    }),
   });
 
   return `<!DOCTYPE html>
@@ -536,11 +681,23 @@ function blogIndexPage(posts) {
       gtag('config', 'G-1JNH702LBD');
     </script>
     <title>Blog | Web Development Sheffield</title>
-    <meta name="description" content="Practical articles on web design, web development, SEO and website performance for Sheffield businesses.">
+    <meta name="description" content="${escapeAttr(description)}">
     <link rel="canonical" href="${url}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Blog | Web Development Sheffield">
+    <meta property="og:description" content="${escapeAttr(description)}">
+    <meta property="og:url" content="${url}">
+    <meta name="twitter:card" content="summary_large_image">
 ${HEAD_COMMON}
+    <link rel="stylesheet" href="/css/blog-index.css">
     <script type="application/ld+json">
-${ld}
+${breadcrumbLd}
+    </script>
+    <script type="application/ld+json">
+${orgLd}
+    </script>
+    <script type="application/ld+json">
+${blogLd}
     </script>
 </head>
 <body>
@@ -557,8 +714,21 @@ ${HEADER}
     </div>
 </div>
 
-<section style="max-width:860px; margin:0 auto; padding:4rem 4rem 6rem;">
-${cards || '<p style="color:var(--muted)">No articles published yet. Check back soon!</p>'}
+${latest}
+
+<div class="blog-filters">
+    <button class="blog-filter" data-filter="all" aria-pressed="true">All</button>
+    <button class="blog-filter" data-filter="web-development" aria-pressed="false">Web Development</button>
+    <button class="blog-filter" data-filter="web-design" aria-pressed="false">Web Design</button>
+    <button class="blog-filter" data-filter="seo" aria-pressed="false">SEO</button>
+</div>
+
+<section class="blog-grid" id="blog-grid">
+
+${cards}
+
+<p class="blog-empty" id="blog-empty">No articles in this category yet — check back soon.</p>
+
 </section>
 
 ${FOOTER}
