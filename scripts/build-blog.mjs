@@ -506,33 +506,7 @@ function relatedPostsSection(currentSlug, allPosts) {
 
   if (!related.length) return '';
 
-  const cards = related.map((post) => {
-    const date = fmtDate(post.publishedAt);
-    const summary = truncate(firstParagraph(post.body), 120) || 'Click to read the full article…';
-    const image = post.imageUrl
-      ? `<div class="related-post-image">\n                <img\n                    src="${escapeAttr(post.imageUrl)}?w=400&h=220&fit=crop"\n                    alt="${escapeAttr(post.title)}">\n            </div>`
-      : `<div class="related-post-image related-post-no-image"></div>`;
-
-    return `    <article class="related-post-card">
-        <a href="/blog/${encodeURIComponent(post.slug)}/">
-
-            ${image}
-
-            <div class="related-post-content">
-                ${date ? `<span class="related-post-date">\n                    ${escapeHtml(date)}\n                </span>` : ''}
-
-                <h3>
-                    ${escapeHtml(post.title)}
-                </h3>
-
-                <p>
-                    ${escapeHtml(summary)}
-                </p>
-            </div>
-
-        </a>
-    </article>`;
-  }).join('\n\n');
+  const cards = related.map(indexCard).join('\n\n');
 
   return `\n<section class="related-posts">\n\n<div class="related-posts-header">\n    <p class="section-label">Continue Reading</p>\n    <h2>Related Articles</h2>\n    <p>\n        Explore more insights, tips and guides from\n        Web Development Sheffield.\n    </p>\n</div>\n\n<div class="related-posts-grid">\n\n${cards}\n\n</div>\n\n\n</section>\n`;
 }
@@ -543,6 +517,7 @@ function postPage(post, allPosts) {
   const url = `${SITE_URL}/blog/${post.slug}/`;
   const description = truncate(firstParagraph(post.body), 155);
   const date = fmtDate(post.publishedAt);
+  const category = postCategory(post);
 
   const hero = post.imageUrl
     ? `<div class="post-hero-image"><img src="${escapeAttr(post.imageUrl)}?w=1200&h=500&fit=crop" alt="${escapeAttr(post.title)}"></div>`
@@ -561,6 +536,7 @@ function postPage(post, allPosts) {
     datePublished: post.publishedAt,
     dateModified: post._updatedAt || post.publishedAt,
     ...(post.imageUrl ? { image: [post.imageUrl] } : {}),
+    ...(category ? { articleSection: category.label } : {}),
     url,
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     author: { '@type': 'Organization', name: 'Web Development Sheffield', url: `${SITE_URL}/` },
@@ -589,6 +565,7 @@ function postPage(post, allPosts) {
     <meta property="og:title" content="${escapeAttr(post.title)}">
     <meta property="og:description" content="${escapeAttr(description)}">
 ${HEAD_COMMON}
+    <link rel="stylesheet" href="/css/blog-index.css">
     <script type="application/ld+json">
 ${ld}
     </script>
@@ -602,6 +579,7 @@ ${HEADER}
     <div style="position:relative; max-width:860px;">
         <a class="back-link" href="/blog">Back</a>
         <p class="article-label">Web Development Sheffield — Blog</p>
+        ${categoryTag(post)}
         <h1 id="post-title">${escapeHtml(post.title)}</h1>
         <div class="article-meta">${date ? `<span>Published ${escapeHtml(date)}</span>` : ''}</div>
     </div>
