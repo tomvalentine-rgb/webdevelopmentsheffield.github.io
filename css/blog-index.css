@@ -62,7 +62,14 @@
 
 .latest-primary .card-tag {
     color: #fff;
+    background: transparent;
     border-color: rgba(255, 255, 255, 0.5);
+}
+
+.latest-secondary .card-tag,
+.blog-grid .card-tag {
+    background: #f1f3f5;
+    border-color: transparent;
 }
 
 .latest-primary h2 {
