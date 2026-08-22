@@ -63,6 +63,31 @@ if (tocLinks.length) {
     updateActiveSection();
 }
 
+/* ─── BLOG CATEGORY FILTER ────────────────────── */
+const blogFilterButtons = document.querySelectorAll('.blog-filter');
+const blogCards = document.querySelectorAll('#blog-grid .blog-card');
+const blogEmpty = document.getElementById('blog-empty');
+
+if (blogFilterButtons.length && blogCards.length) {
+    blogFilterButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            blogFilterButtons.forEach((other) => other.setAttribute('aria-pressed', 'false'));
+            btn.setAttribute('aria-pressed', 'true');
+
+            const filter = btn.getAttribute('data-filter');
+            let visibleCount = 0;
+
+            blogCards.forEach((card) => {
+                const match = filter === 'all' || card.getAttribute('data-category') === filter;
+                card.classList.toggle('is-visible', match);
+                if (match) visibleCount += 1;
+            });
+
+            blogEmpty?.classList.toggle('is-visible', visibleCount === 0);
+        });
+    });
+}
+
 /* ─── EMAILJS CONTACT FORM ────────────────────── */
 if (typeof emailjs !== 'undefined') {
     emailjs.init('FzhcE3c4OivFCtrVc');

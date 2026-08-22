@@ -36,6 +36,15 @@ const GROQ = `*[_type == "post"] | order(publishedAt desc){
   publishedAt,
   _updatedAt,
   body,
+  "category": coalesce(
+    category->title,
+    category->name,
+    categories[0]->title,
+    categories[0]->name,
+    category,
+    categories[0]
+  ),
+  "categorySlug": coalesce(category->slug.current, categories[0]->slug.current),
   "imageUrl": mainImage.asset->url
 }`;
 
@@ -78,6 +87,68 @@ function truncate(text, max) {
   if (!text) return '';
   if (text.length <= max) return text;
   return text.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
+}
+
+function slugifyCategory(value) {
+  return String(value ?? '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-');
+}
+
+function labelFromSlug(slug) {
+  if (slug === 'seo') return 'SEO';
+  return slug
+    .split('-')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function postCategory(post) {
+  const raw = post.category;
+  const title = typeof raw === 'string'
+    ? raw.trim()
+    : String(raw?.title || raw?.name || '').trim();
+  if (!title) return null;
+
+  const slug = slugifyCategory(post.categorySlug || title);
+  if (!slug) return null;
+
+  const label = /[A-Z\s]/.test(title) ? title : labelFromSlug(slug);
+  return { slug, label };
+}
+
+function categoryTag(post) {
+  const category = postCategory(post);
+  return category ? `<span class="card-tag">${escapeHtml(category.label)}</span>` : '';
+}
+
+function categoryFilters(posts) {
+  const seen = new Map([
+    ['web-development', 'Web Development'],
+    ['web-design', 'Web Design'],
+    ['seo', 'SEO'],
+  ]);
+
+  for (const post of posts) {
+    const category = postCategory(post);
+    if (category && !seen.has(category.slug)) {
+      seen.set(category.slug, category.label);
+    }
+  }
+
+  const buttons = [
+    '    <button class="blog-filter" data-filter="all" aria-pressed="true">All</button>',
+    ...[...seen.entries()].map(
+      ([slug, label]) =>
+        `    <button class="blog-filter" data-filter="${escapeAttr(slug)}" aria-pressed="false">${escapeHtml(label)}</button>`,
+    ),
+  ];
+
+  return `<div class="blog-filters">\n${buttons.join('\n')}\n</div>`;
 }
 
 /**
@@ -357,6 +428,71 @@ function card(post) {
 </article>`;
 }
 
+function indexCard(post) {
+  const date = fmtDate(post.publishedAt);
+  const summary = truncate(firstParagraph(post.body), 150) || 'Click to read the full article…';
+  const href = `/blog/${encodeURIComponent(post.slug)}/`;
+  const category = postCategory(post);
+  const image = post.imageUrl
+    ? `<div class="blog-card-image"><img src="${escapeAttr(post.imageUrl)}?w=300&h=220&fit=crop" alt="${escapeAttr(post.title)}"></div>`
+    : NO_IMAGE_SVG;
+
+  return `<article class="blog-card is-visible"${category ? ` data-category="${escapeAttr(category.slug)}"` : ''}>
+    <a href="${href}">
+        ${image}
+    </a>
+    <div class="blog-card-content">
+        ${categoryTag(post)}
+        ${date ? `<p class="card-date">${escapeHtml(date)}</p>` : ''}
+        <h2><a href="${href}">${escapeHtml(post.title)}</a></h2>
+        <p>${escapeHtml(summary)}</p>
+        <a class="read-more" href="${href}">Read More →</a>
+    </div>
+</article>`;
+}
+
+function latestSection(posts) {
+  const [primary, ...rest] = posts;
+  if (!primary) return '';
+
+  const secondary = rest.slice(0, 2);
+  const primaryHref = `/blog/${encodeURIComponent(primary.slug)}/`;
+  const primaryImage = primary.imageUrl
+    ? `<img src="${escapeAttr(primary.imageUrl)}?w=800&h=600&fit=crop" alt="${escapeAttr(primary.title)}">`
+    : '';
+
+  const secondaryItems = secondary.map((post) => {
+    const href = `/blog/${encodeURIComponent(post.slug)}/`;
+    const image = post.imageUrl
+      ? `<img src="${escapeAttr(post.imageUrl)}?w=220&h=176&fit=crop" alt="${escapeAttr(post.title)}">`
+      : '';
+    return `            <a class="latest-secondary-item" href="${href}">
+                ${image}
+                <div>
+                    ${categoryTag(post)}
+                    <h3>${escapeHtml(post.title)}</h3>
+                </div>
+            </a>`;
+  }).join('\n');
+
+  return `<section class="latest-section">
+    <p class="latest-heading">Latest Articles</p>
+    <div class="latest-grid">
+        <a class="latest-primary" href="${primaryHref}">
+            ${primaryImage}
+            <div class="latest-primary-content">
+                ${categoryTag(primary)}
+                <h2>${escapeHtml(primary.title)}</h2>
+                ${primary.publishedAt ? `<span class="card-date">${escapeHtml(fmtDate(primary.publishedAt))}</span>` : ''}
+            </div>
+        </a>
+        <div class="latest-secondary">
+${secondaryItems}
+        </div>
+    </div>
+</section>`;
+}
+
 /* ── related posts section ───────────────────────────────── */
 
 /**
@@ -370,33 +506,7 @@ function relatedPostsSection(currentSlug, allPosts) {
 
   if (!related.length) return '';
 
-  const cards = related.map((post) => {
-    const date = fmtDate(post.publishedAt);
-    const summary = truncate(firstParagraph(post.body), 120) || 'Click to read the full article…';
-    const image = post.imageUrl
-      ? `<div class="related-post-image">\n                <img\n                    src="${escapeAttr(post.imageUrl)}?w=400&h=220&fit=crop"\n                    alt="${escapeAttr(post.title)}">\n            </div>`
-      : `<div class="related-post-image related-post-no-image"></div>`;
-
-    return `    <article class="related-post-card">
-        <a href="/blog/${encodeURIComponent(post.slug)}/">
-
-            ${image}
-
-            <div class="related-post-content">
-                ${date ? `<span class="related-post-date">\n                    ${escapeHtml(date)}\n                </span>` : ''}
-
-                <h3>
-                    ${escapeHtml(post.title)}
-                </h3>
-
-                <p>
-                    ${escapeHtml(summary)}
-                </p>
-            </div>
-
-        </a>
-    </article>`;
-  }).join('\n\n');
+  const cards = related.map(indexCard).join('\n\n');
 
   return `\n<section class="related-posts">\n\n<div class="related-posts-header">\n    <p class="section-label">Continue Reading</p>\n    <h2>Related Articles</h2>\n    <p>\n        Explore more insights, tips and guides from\n        Web Development Sheffield.\n    </p>\n</div>\n\n<div class="related-posts-grid">\n\n${cards}\n\n</div>\n\n\n</section>\n`;
 }
@@ -407,6 +517,7 @@ function postPage(post, allPosts) {
   const url = `${SITE_URL}/blog/${post.slug}/`;
   const description = truncate(firstParagraph(post.body), 155);
   const date = fmtDate(post.publishedAt);
+  const category = postCategory(post);
 
   const hero = post.imageUrl
     ? `<div class="post-hero-image"><img src="${escapeAttr(post.imageUrl)}?w=1200&h=500&fit=crop" alt="${escapeAttr(post.title)}"></div>`
@@ -425,6 +536,7 @@ function postPage(post, allPosts) {
     datePublished: post.publishedAt,
     dateModified: post._updatedAt || post.publishedAt,
     ...(post.imageUrl ? { image: [post.imageUrl] } : {}),
+    ...(category ? { articleSection: category.label } : {}),
     url,
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     author: { '@type': 'Organization', name: 'Web Development Sheffield', url: `${SITE_URL}/` },
@@ -453,6 +565,7 @@ function postPage(post, allPosts) {
     <meta property="og:title" content="${escapeAttr(post.title)}">
     <meta property="og:description" content="${escapeAttr(description)}">
 ${HEAD_COMMON}
+    <link rel="stylesheet" href="/css/blog-index.css">
     <script type="application/ld+json">
 ${ld}
     </script>
@@ -466,6 +579,7 @@ ${HEADER}
     <div style="position:relative; max-width:860px;">
         <a class="back-link" href="/blog">Back</a>
         <p class="article-label">Web Development Sheffield — Blog</p>
+        ${categoryTag(post)}
         <h1 id="post-title">${escapeHtml(post.title)}</h1>
         <div class="article-meta">${date ? `<span>Published ${escapeHtml(date)}</span>` : ''}</div>
     </div>
@@ -509,20 +623,48 @@ ${FOOTER}
 
 function blogIndexPage(posts) {
   const url = `${SITE_URL}/blog/`;
-  const cards = posts.map(card).join('\n');
-  const ld = jsonLd({
+  const description = 'Practical articles on web design, web development, SEO and website performance for Sheffield businesses.';
+  const cards = posts.map(indexCard).join('\n\n');
+  const latest = latestSection(posts);
+  const breadcrumbLd = jsonLd({
     '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'Blog | Web Development Sheffield',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: url },
+    ],
+  });
+  const orgLd = jsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${SITE_URL}/#organization`,
+    name: 'Web Development Sheffield',
+    url: `${SITE_URL}/`,
+    logo: `${SITE_URL}/assets/logo.png`,
+  });
+  const blogLd = jsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    '@id': `${url}#blog`,
+    name: 'Web Development Sheffield Blog',
     url,
-    description:
-      'Practical articles on web design, web development, SEO and website performance for Sheffield businesses.',
-    hasPart: posts.map((p) => ({
-      '@type': 'BlogPosting',
-      headline: p.title,
-      url: `${SITE_URL}/blog/${p.slug}/`,
-      datePublished: p.publishedAt,
-    })),
+    description,
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    blogPost: posts.map((p) => {
+      const category = postCategory(p);
+      return {
+        '@type': 'BlogPosting',
+        headline: p.title,
+        url: `${SITE_URL}/blog/${p.slug}/`,
+        datePublished: p.publishedAt,
+        dateModified: p._updatedAt || p.publishedAt,
+        ...(p.imageUrl ? { image: `${p.imageUrl}?w=1200&h=630&fit=crop` } : {}),
+        description: truncate(firstParagraph(p.body), 155),
+        ...(category ? { articleSection: category.label } : {}),
+        author: { '@id': `${SITE_URL}/#organization` },
+        publisher: { '@id': `${SITE_URL}/#organization` },
+      };
+    }),
   });
 
   return `<!DOCTYPE html>
@@ -535,12 +677,24 @@ function blogIndexPage(posts) {
       gtag('js', new Date());
       gtag('config', 'G-1JNH702LBD');
     </script>
-    <title>Blog | Web Development Sheffield</title>
-    <meta name="description" content="Practical articles on web design, web development, SEO and website performance for Sheffield businesses.">
+    <title>Web Design Articles &amp; Guides | Web Development Sheffield</title>
+    <meta name="description" content="${escapeAttr(description)}">
     <link rel="canonical" href="${url}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Web Design Articles &amp; Guides | Web Development Sheffield">
+    <meta property="og:description" content="${escapeAttr(description)}">
+    <meta property="og:url" content="${url}">
+    <meta name="twitter:card" content="summary_large_image">
 ${HEAD_COMMON}
+    <link rel="stylesheet" href="/css/blog-index.css">
     <script type="application/ld+json">
-${ld}
+${breadcrumbLd}
+    </script>
+    <script type="application/ld+json">
+${orgLd}
+    </script>
+    <script type="application/ld+json">
+${blogLd}
     </script>
 </head>
 <body>
@@ -552,13 +706,21 @@ ${HEADER}
     <div style="position:relative; max-width:860px;">
         <a class="back-link" href="/">Back</a>
         <p class="article-label">Web Development Sheffield — Blog</p>
-        <h1 id="post-title">From The Blog</h1>
+        <h1 id="post-title">Web Design Articles</h1>
         <div class="article-meta"><span>Tips, insights and advice for businesses looking to grow online.</span></div>
     </div>
 </div>
 
-<section style="max-width:860px; margin:0 auto; padding:4rem 4rem 6rem;">
-${cards || '<p style="color:var(--muted)">No articles published yet. Check back soon!</p>'}
+${latest}
+
+${categoryFilters(posts)}
+
+<section class="blog-grid" id="blog-grid">
+
+${cards}
+
+<p class="blog-empty" id="blog-empty">No articles in this category yet — check back soon.</p>
+
 </section>
 
 ${FOOTER}
