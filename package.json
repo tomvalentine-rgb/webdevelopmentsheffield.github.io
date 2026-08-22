@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Static site for Web Development Sheffield, with a build step that prerenders the Sanity blog.",
   "scripts": {
+    "dev": "npx serve",
     "build:blog": "node scripts/build-blog.mjs"
   },
   "engines": {
