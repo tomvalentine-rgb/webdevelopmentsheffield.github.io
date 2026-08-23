@@ -132,17 +132,12 @@
   <nav class="main-nav">
 
     <a class="nav-logo" href="/">
-      <img
-              src="/assets/logo.png"
-              alt="Web Development Sheffield Logo"
-              class="logo-img"
-      >
-      <span class="logo-text">
-                Web Development Sheffield
-            </span>
+      <img src="/assets/logo.png" alt="Web Development Sheffield Logo" class="logo-img">
+      <span class="logo-text"> Web Development Sheffield</span>
     </a>
 
     <ul class="nav-links">
+      <li><a href="/" aria-current="page">Home</a></li>
       <li><a href="/services" aria-current="page">Services</a></li>
       <li><a href="/index.html#process">Process</a></li>
       <li><a href="/index.html#pricing">Pricing</a></li>
@@ -160,6 +155,7 @@
 
     <!-- MOBILE MENU -->
     <div class="mobile-menu" id="mobile-menu">
+      <a href="/" onclick="closeMenu()">Home</a>
       <a href="/services" onclick="closeMenu()">Services</a>
       <a href="/index.html#process" onclick="closeMenu()">Process</a>
       <a href="/index.html#pricing" onclick="closeMenu()">Pricing</a>
@@ -206,7 +202,7 @@
 
   <!-- CORE SERVICES -->
   <section id="core-services">
-    <p class="section-label fade-up">Core Services</p>
+    <p class="section-label fade-up">What we do</p>
     <h2 class="fade-up">Our Services</h2>
     <p class="section-intro fade-up">
       Choose the service that matches where your website is today — whether you
@@ -441,7 +437,7 @@
 
         <div class="footer-column">
             <h3>Contact</h3>
-            <p><strong>Web Development Sheffield</strong></p>
+          <p><a href="/"><strong>Web Development Sheffield</strong></a></p>
             <address>
                 Millhouses<br>
                 Sheffield<br>

@@ -7,7 +7,7 @@
    ═══════════════════════════════════════════════ */
 
 .article-header {
-    padding: 12rem 4rem 4rem;
+    padding: 10rem 4rem 1rem;
     background: var(--bg-light);
     position: relative;
     overflow: hidden;
@@ -51,6 +51,7 @@
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.15em;
+    color: var(--muted)
 }
 .article-toc ul {list-style: none;}
 .article-toc li {margin-bottom: 0.75rem;}
@@ -94,10 +95,9 @@
     position: relative;
 }
 .article-meta {
-    display: flex; align-items: center; gap: 1.5rem;
-    font-size: 0.90rem; 
-    color: var(--muted); 
-    position: relative;
+    display: inline align-items: center; gap: 1.5rem;
+    font-size: 1.00rem;
+    color: var(--muted);
 }
 
 .article-body {
@@ -111,7 +111,7 @@
 .article-cta {
     max-width: 1300px;
     margin: 4rem auto;
-    padding: 5rem 4rem;
+    padding: 3rem 2rem;
     background: var(--bg-light);
     border: 1px solid var(--border);
     border-radius: 20px;
@@ -184,8 +184,8 @@
 
 .related-posts {
     max-width: 1350px;
-    margin: 3rem auto 2rem;
-    padding: 3rem 2rem 0rem;
+    margin: 1rem auto 2rem;
+    padding: 0rem 2rem 0rem;
 }
 
 .related-posts-header {
@@ -198,7 +198,7 @@
 }
 
 .related-posts-header p {
-    color: var(--muted);
+    color: var(--accent);
 }
 
 /* Grid */
@@ -325,16 +325,17 @@
 
 /* ─── BLOG POST HERO IMAGE ────────────────────── */
 .post-hero-image {
-    width: 100%;
+    max-width: 1400px;
+    margin: 2rem auto 1.5rem;
     max-height: 480px;
     overflow: hidden;
-    background: var(--border);
 }
 .post-hero-image img {
     width: 100%;
-    height: 480px;
+    height: 420px;
     object-fit: cover;
     display: block;
+    border-radius: 14px;
 }
 
 /* ─── RESPONSIVE ──────────────────────────────── */
@@ -422,3 +423,12 @@
     align-self: flex-start;
 }
 .blog-card-content a:hover { text-decoration: underline; }
+
+.blog-category-tag {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
