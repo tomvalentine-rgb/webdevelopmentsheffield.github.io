@@ -646,11 +646,11 @@ function workIndexPage(projects) {
       gtag('js', new Date());
       gtag('config', 'G-1JNH702LBD');
     </script>
-    <title>Our Work | Web Development Sheffield</title>
+    <title>Web Design Project Examples | Web Development Sheffield</title>
     <meta name="description" content="${escapeAttr(description)}">
     <link rel="canonical" href="${url}">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Our Work | Web Development Sheffield">
+    <meta property="og:title" content="Web Design Project Examples | Web Development Sheffield">
     <meta property="og:description" content="${escapeAttr(description)}">
     <meta property="og:url" content="${url}">
     <meta name="twitter:card" content="summary_large_image">
@@ -678,8 +678,8 @@ ${HEADER}
 <section class="articles-section-header">
     <p class="latest-heading">${featured.length ? 'All Projects' : 'Projects'}</p>
     <p class="articles-intro">
-        Browse case studies from businesses across Sheffield and beyond —
-        from brochure sites to bespoke booking systems.
+        Case studies of our past web development and web design projects.
+        Our case studies show you how we work and the services we offer.
     </p>
 </section>
 
