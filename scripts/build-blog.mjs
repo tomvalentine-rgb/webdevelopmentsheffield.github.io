@@ -323,6 +323,7 @@ const HEADER = `<header class="site-header">
         </a>
 
         <ul class="nav-links">
+            <li><a href="/">Home</a></li>
             <li><a href="/services">Services</a></li>
             <li><a href="/index.html#process">Process</a></li>
             <li><a href="/index.html#pricing">Pricing</a></li>
