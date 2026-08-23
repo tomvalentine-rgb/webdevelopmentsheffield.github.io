@@ -1,4 +1,9 @@
-name: Build blog
+# Yaml file for building both blog and our work sections of the website
+# Run automatically in GitHub actions daily
+# Order matters, build blog before build work due to the way that sitemap is constructed
+
+
+name: Build blog & work
 
 on:
   workflow_dispatch: {}
@@ -27,7 +32,12 @@ jobs:
 
       - run: npm ci
 
+      # Order matters: build:blog rewrites sitemap.xml from scratch each
+      # run, and build:work merges its own <!-- work:start/end --> block
+      # back in afterwards. Running build:work first would have its
+      # sitemap entries wiped out by build:blog.
       - run: npm run build:blog
+      - run: npm run build:work
 
       - name: Commit regenerated blog if changed
         run: |
