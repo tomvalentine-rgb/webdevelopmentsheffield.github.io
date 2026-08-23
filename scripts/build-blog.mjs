@@ -121,6 +121,17 @@ function postCategory(post) {
   return { slug, label };
 }
 
+function articlesSectionHeader() {
+  return `
+<section class="articles-section-header">
+    <p class="latest-heading">All Articles</p>
+    <p class="articles-intro">
+        View all our articles on web design, web development,
+        website maintenance and SEO.
+    </p>
+</section>`;
+}
+
 function categoryTag(post) {
   const category = postCategory(post);
   return category ? `<span class="card-tag">${escapeHtml(category.label)}</span>` : '';
@@ -130,6 +141,7 @@ function categoryFilters(posts) {
   const seen = new Map([
     ['web-development', 'Web Development'],
     ['web-design', 'Web Design'],
+    ['website-maintenance', 'Website Maintenance'],
     ['seo', 'SEO'],
   ]);
 
@@ -358,7 +370,7 @@ const FOOTER = `<footer>
 
         <div class="footer-column">
             <h3>Contact</h3>
-            <p><strong>Web Development Sheffield</strong></p>
+            <p><a href="/"><strong>Web Development Sheffield</strong></a></p>
             <address>
                 Millhouses<br>
                 Sheffield<br>
@@ -456,39 +468,72 @@ function latestSection(posts) {
   if (!primary) return '';
 
   const secondary = rest.slice(0, 2);
+
   const primaryHref = `/blog/${encodeURIComponent(primary.slug)}/`;
+
   const primaryImage = primary.imageUrl
     ? `<img src="${escapeAttr(primary.imageUrl)}?w=800&h=600&fit=crop" alt="${escapeAttr(primary.title)}">`
     : '';
 
-  const secondaryItems = secondary.map((post) => {
-    const href = `/blog/${encodeURIComponent(post.slug)}/`;
-    const image = post.imageUrl
-      ? `<img src="${escapeAttr(post.imageUrl)}?w=220&h=176&fit=crop" alt="${escapeAttr(post.title)}">`
-      : '';
-    return `            <a class="latest-secondary-item" href="${href}">
+  const primarySummary =
+    truncate(firstParagraph(primary.body), 140) ||
+    'Read the full article to learn more.';
+
+  const secondaryItems = secondary
+    .map((post) => {
+      const href = `/blog/${encodeURIComponent(post.slug)}/`;
+
+      const image = post.imageUrl
+        ? `<img src="${escapeAttr(post.imageUrl)}?w=220&h=176&fit=crop" alt="${escapeAttr(post.title)}">`
+        : '';
+
+      const summary =
+        truncate(firstParagraph(post.body), 90) ||
+        'Read the full article to learn more.';
+
+      return `            <a class="latest-secondary-item" href="${href}">
                 ${image}
                 <div>
                     ${categoryTag(post)}
                     <h3>${escapeHtml(post.title)}</h3>
+                    <p class="latest-excerpt">
+                        ${escapeHtml(summary)}
+                    </p>
+                    <span class="latest-read-more">
+                        Read article →
+                    </span>
                 </div>
             </a>`;
-  }).join('\n');
+    })
+    .join('\n');
 
   return `<section class="latest-section">
     <p class="latest-heading">Latest Articles</p>
+
     <div class="latest-grid">
+
         <a class="latest-primary" href="${primaryHref}">
             ${primaryImage}
+
             <div class="latest-primary-content">
                 ${categoryTag(primary)}
+
                 <h2>${escapeHtml(primary.title)}</h2>
-                ${primary.publishedAt ? `<span class="card-date">${escapeHtml(fmtDate(primary.publishedAt))}</span>` : ''}
+
+                <p class="latest-primary-excerpt">
+                    ${escapeHtml(primarySummary)}
+                </p>
+
+                <span class="latest-read-more">
+                    Read article →
+                </span>
             </div>
         </a>
+
         <div class="latest-secondary">
 ${secondaryItems}
         </div>
+
     </div>
 </section>`;
 }
@@ -508,7 +553,7 @@ function relatedPostsSection(currentSlug, allPosts) {
 
   const cards = related.map(indexCard).join('\n\n');
 
-  return `\n<section class="related-posts">\n\n<div class="related-posts-header">\n    <p class="section-label">Continue Reading</p>\n    <h2>Related Articles</h2>\n    <p>\n        Explore more insights, tips and guides from\n        Web Development Sheffield.\n    </p>\n</div>\n\n<div class="related-posts-grid">\n\n${cards}\n\n</div>\n\n\n</section>\n`;
+  return `\n<section class="related-posts">\n\n<div class="related-posts-header">\n    <p class="article-label">Continue Reading</p>\n    <h2>Related Articles</h2>\n    <p>\n        Explore more insights, tips and guides from\n        Web Development Sheffield.\n    </p>\n</div>\n\n<div class="related-posts-grid">\n\n${cards}\n\n</div>\n\n\n</section>\n`;
 }
 
 /* ── page templates ──────────────────────────────────────── */
@@ -577,11 +622,9 @@ ${HEADER}
 <div class="article-header">
     <div class="article-header-grid"></div>
     <div style="position:relative; max-width:860px;">
-        <a class="back-link" href="/blog">Back</a>
-        <p class="article-label">Web Development Sheffield — Blog</p>
-        ${categoryTag(post)}
+        <p class="article-label">Design Articles</p>
         <h1 id="post-title">${escapeHtml(post.title)}</h1>
-        <div class="article-meta">${date ? `<span>Published ${escapeHtml(date)}</span>` : ''}</div>
+        <span class="blog-category-tag">${categoryTag(post)}</span> • <span class="article-meta">${date ? `<span>Published ${escapeHtml(date)}</span>` : ''}</span></span>
     </div>
 </div>
 
@@ -601,7 +644,7 @@ ${body}
 <section class="article-cta-wrapper">
   <section class="article-cta">
       <h2>Need a website for your business?</h2>
-      <p> We partner with businesses at every stage of growth to deliver custom websites that drive real results. </p>
+      <p> We design, build, and maintain custom websites for all kinds of businesses, from sole traders to large enterprises. </p>
       <a href="/index.html#contact" class="btn-primary">
           Get a Quote
       </a>
@@ -704,14 +747,15 @@ ${HEADER}
 <div class="article-header">
     <div class="article-header-grid"></div>
     <div style="position:relative; max-width:860px;">
-        <a class="back-link" href="/">Back</a>
-        <p class="article-label">Web Development Sheffield — Blog</p>
+        <p class="article-label">Design Articles</p>
         <h1 id="post-title">Web Design Articles</h1>
-        <div class="article-meta"><span>Tips, insights and advice for businesses looking to grow online.</span></div>
+        <div class="article-meta"><span>Tips, insights and practical advice on web design, web development, website maintenance and SEO.</span></div>
     </div>
 </div>
 
 ${latest}
+
+${articlesSectionHeader()}
 
 ${categoryFilters(posts)}
 
