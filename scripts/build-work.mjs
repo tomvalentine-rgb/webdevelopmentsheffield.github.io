@@ -465,70 +465,6 @@ function workListingCard(project) {
 </article>`;
 }
 
-function latestWorkSection(projects) {
-  const [primary, ...rest] = projects;
-  if (!primary) return '';
-
-  const secondary = rest.slice(0, 2);
-  const primaryHref = `/work/${encodeURIComponent(primary.slug)}/`;
-  const primaryImage = primary.mainImageUrl
-    ? `<img src="${escapeAttr(primary.mainImageUrl)}?w=800&h=600&fit=crop" alt="${escapeAttr(primary.mainImageAlt || primary.business)}">`
-    : '';
-  const primarySummary = truncate(primary.summary || '', 140) || 'View the full case study to learn more.';
-
-  const secondaryItems = secondary.map((project) => {
-    const href = `/work/${encodeURIComponent(project.slug)}/`;
-    const image = project.mainImageUrl
-      ? `<img src="${escapeAttr(project.mainImageUrl)}?w=220&h=176&fit=crop" alt="${escapeAttr(project.mainImageAlt || project.business)}">`
-      : '';
-    const summary = truncate(project.summary || '', 90) || 'View the full case study to learn more.';
-
-    return `            <a class="latest-secondary-item" href="${href}">
-                ${image}
-                <div>
-                    ${projectTag(project)}
-                    <h3>${escapeHtml(project.business)}</h3>
-                    <p class="latest-excerpt">
-                        ${escapeHtml(summary)}
-                    </p>
-                    <span class="latest-read-more">
-                        View project →
-                    </span>
-                </div>
-            </a>`;
-  }).join('\n');
-
-  return `<section class="latest-section">
-    <p class="latest-heading">Latest Projects</p>
-
-    <div class="latest-grid">
-
-        <a class="latest-primary" href="${primaryHref}">
-            ${primaryImage}
-
-            <div class="latest-primary-content">
-                ${projectTag(primary)}
-
-                <h2>${escapeHtml(primary.business)}</h2>
-
-                <p class="latest-primary-excerpt">
-                    ${escapeHtml(primarySummary)}
-                </p>
-
-                <span class="latest-read-more">
-                    View project →
-                </span>
-            </div>
-        </a>
-
-        <div class="latest-secondary">
-${secondaryItems}
-        </div>
-
-    </div>
-</section>`;
-}
-
 function categoryFilters(projects) {
   const seen = new Map();
   for (const project of projects) {
@@ -609,10 +545,17 @@ function postHero(project) {
 
 function galleryFigures(project) {
   const heroUrl = project.mainImageUrl || (project.gallery || []).find((img) => img?.url)?.url;
-  return (project.gallery || [])
-    .filter((img) => img?.url && img.url !== heroUrl)
-    .map((img) => `<figure><img src="${escapeAttr(img.url)}?w=1200" alt="${escapeAttr(img.alt || project.business)}"></figure>`)
-    .join('');
+  const images = (project.gallery || []).filter((img) => img?.url && img.url !== heroUrl);
+  if (!images.length) return '';
+
+  const items = images
+    .map(
+      (img) =>
+        `        <button type="button" class="case-gallery-item" data-full-src="${escapeAttr(img.url)}" aria-label="View ${escapeAttr(img.alt || project.business)} full size"><img src="${escapeAttr(img.url)}?w=1400&h=800&fit=crop" alt="${escapeAttr(img.alt || project.business)}"></button>`,
+    )
+    .join('\n');
+
+  return `<div class="case-split-gallery">\n${items}\n    </div>`;
 }
 
 function articleBody(project) {
@@ -657,8 +600,6 @@ function articleBody(project) {
       .join('');
     parts.push(`<h2 id="the-numbers">The Numbers</h2><ul>${items}</ul>`);
   }
-
-  parts.push(galleryFigures(project));
 
   return {
     html: parts.filter(Boolean).join('') || '<p>This case study has no content yet.</p>',
@@ -725,6 +666,7 @@ ${HEADER}
 </div>
 
 ${postHero(project)}
+${galleryFigures(project)}
 
 <div class="article-layout">
 
@@ -752,7 +694,13 @@ ${relatedProjectsSection(project.slug, allProjects)}
 
 ${FOOTER}
 
+<dialog class="image-lightbox" id="image-lightbox">
+    <button type="button" class="image-lightbox-close" aria-label="Close image">×</button>
+    <img alt="">
+</dialog>
+
 <script src="/js/main.js"></script>
+<script src="/js/work-lightbox.js"></script>
 
 
 </body>
@@ -764,7 +712,6 @@ function workIndexPage(projects) {
   const url = `${SITE_URL}/work/`;
   const description = 'Case studies of websites we\u2019ve designed and built for businesses in Sheffield and beyond.';
   const cards = projects.map(workListingCard).join('\n\n');
-  const latest = latestWorkSection(projects);
 
   const breadcrumbLd = jsonLd({
     '@context': 'https://schema.org',
@@ -830,8 +777,6 @@ ${HEADER}
         <div class="article-meta"><span>Real websites we've designed and built, and the results they've delivered for our clients.</span></div>
     </div>
 </div>
-
-${latest}
 
 <section class="articles-section-header">
     <p class="latest-heading">All Projects</p>
