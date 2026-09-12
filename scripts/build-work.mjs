@@ -349,7 +349,6 @@ const FOOTER = `<footer>
                 <li><a href="/services/software-development-sheffield.html" title="Software Development Sheffield">Software Development</a></li>
                 <li><a href="/services" title="Search Engine Optimization Sheffield">SEO</a></li>
                 <li><a href="/services/website-maintenance-sheffield.html" title="Website Maintenance Sheffield">Website Maintenance</a></li>
-                <li><a href="/services/website-support-sheffield.html" title="Website Support Sheffield">Website Support</a></li>
             </ul>
         </div>
 
