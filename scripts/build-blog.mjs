@@ -328,6 +328,7 @@ const HEADER = `<header class="site-header">
             <li><a href="/index.html#process">Process</a></li>
             <li><a href="/index.html#pricing">Pricing</a></li>
             <li><a href="/index.html#faq">FAQs</a></li>
+            <li><a href="/work">Our Work</a></li>
             <li><a href="/blog">Blog</a></li>
             <li><a href="/index.html#contact" class="nav-cta">Get a Quote</a></li>
         </ul>
@@ -343,6 +344,7 @@ const HEADER = `<header class="site-header">
             <a href="/index.html#process" onclick="closeMenu()">Process</a>
             <a href="/index.html#pricing" onclick="closeMenu()">Pricing</a>
             <a href="/index.html#faq" onclick="closeMenu()">FAQs</a>
+            <a href="/work" onclick="closeMenu()">Our Work</a>
             <a href="/blog" onclick="closeMenu()">Blog</a>
             <a href="/index.html#contact" onclick="closeMenu()">Get a Quote</a>
         </div>
@@ -401,6 +403,7 @@ const FOOTER = `<footer>
             <ul>
                 <li><a href="/index.html#pricing">Pricing</a></li>
                 <li><a href="/index.html#faq">FAQs</a></li>
+                <li><a href="/work">Our Work</a></li>
                 <li><a href="/blog">Blog</a></li>
                 <li><a href="/index.html#contact">Contact</a></li>
                 <li><a href="/privacy-policy.html">Privacy Policy</a></li>

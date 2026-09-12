@@ -144,31 +144,58 @@ function extractSectionHeadings(body) {
 
 /* ── portable text rendering ─────────────────────────────── */
 
-function makeComponents(headings) {
+function extractHeadings(body) {
+  const headings = [];
   const seenIds = {};
-  const headingIdMap = new Map();
 
-  for (const h of headings) {
-    let id = slugifyHeading(h.text);
+  for (const block of body || []) {
+    if (block._type !== 'block') continue;
+    if (!['h2', 'h3'].includes(block.style)) continue;
+
+    const text = (block.children || []).map((c) => c.text || '').join('').trim();
+    if (!text) continue;
+
+    let id = slugifyHeading(text);
     if (seenIds[id]) {
       seenIds[id] += 1;
       id = `${id}-${seenIds[id]}`;
     } else {
       seenIds[id] = 1;
     }
-    headingIdMap.set(h.text, id);
+
+    headings.push({ level: block.style, text, id });
+  }
+
+  return headings;
+}
+
+function makeComponents(headings) {
+  const seenIds = {};
+  const headingIdMap = new Map();
+
+  for (const block of headings) {
+    let id = slugifyHeading(block.text);
+    if (seenIds[id]) {
+      seenIds[id] += 1;
+      id = `${id}-${seenIds[id]}`;
+    } else {
+      seenIds[id] = 1;
+    }
+    headingIdMap.set(block.text, id);
   }
 
   return {
     block: {
-      // H2s become section dividers, matching edge.studio's "Research /
-      // Branding / Web design / Development / SEO / Performance" pattern
       h2: ({ children, value }) => {
         const text = (value.children || []).map((c) => c.text || '').join('').trim();
         const id = headingIdMap.get(text) || slugifyHeading(text);
-        return `</div><section class="case-section" id="${escapeAttr(id)}"><h2>${children}</h2><div class="case-section-body">`;
+        return `<h2 id="${escapeAttr(id)}">${children}</h2>`;
       },
-      h3: ({ children }) => `<h3>${children}</h3>`,
+      h3: ({ children, value }) => {
+        const text = (value.children || []).map((c) => c.text || '').join('').trim();
+        const id = headingIdMap.get(text) || slugifyHeading(text);
+        return `<h3 id="${escapeAttr(id)}">${children}</h3>`;
+      },
     },
     marks: {
       link: ({ children, value }) => {
@@ -186,32 +213,30 @@ function makeComponents(headings) {
         const caption = value.caption
           ? `<figcaption>${escapeHtml(value.caption)}</figcaption>`
           : '';
-        return `<figure class="case-figure"><img src="${escapeAttr(url)}?w=1000" alt="${alt}">${caption}</figure>`;
+        return `<figure><img src="${escapeAttr(url)}?w=1200" alt="${alt}">${caption}</figure>`;
       },
     },
   };
 }
 
-/**
- * Renders the body as a sequence of <section class="case-section"> blocks,
- * one per H2. Content before the first H2 (if any) is wrapped in an
- * "Overview" section so it never gets orphaned outside a <section>.
- */
 function renderBody(body) {
   if (!body || !body.length) return '';
+  return toHTML(body, { components: makeComponents(extractHeadings(body)) });
+}
 
-  const headings = extractSectionHeadings(body);
-  const components = makeComponents(headings);
-  const rawHtml = toHTML(body, { components });
+function renderToc(headings) {
+  if (!headings.length) return '  <aside class="article-toc"></aside>';
 
-  const hasLeadingContent = body[0]?.style !== 'h2';
-  const opening = hasLeadingContent
-    ? '<section class="case-section" id="overview"><div class="case-section-body">'
-    : '';
-  // makeComponents' h2 serializer already opens/closes the wrapping divs and
-  // sections for every H2 it hits, so we only need to open the very first
-  // one and close the very last one here.
-  return `${opening}${rawHtml}</div></section>`;
+  const items = headings
+    .map(({ text, id }) => `        <li>\n            <a href="#${escapeAttr(id)}">\n                ${escapeHtml(text)}\n            </a>\n        </li>`)
+    .join('\n');
+
+  return `  <aside class="article-toc">
+      <h3>Contents</h3>
+      <ul id="toc-list">
+${items}
+      </ul>
+  </aside>`;
 }
 
 /* ── shared chrome (identical to build-blog.mjs) ─────────── */
@@ -257,7 +282,8 @@ const HEADER = `<header class="site-header">
             <li><a href="/services">Services</a></li>
             <li><a href="/index.html#process">Process</a></li>
             <li><a href="/index.html#pricing">Pricing</a></li>
-            <li><a href="/work">Work</a></li>
+            <li><a href="/index.html#faq">FAQs</a></li>
+            <li><a href="/work">Our Work</a></li>
             <li><a href="/blog">Blog</a></li>
             <li><a href="/index.html#contact" class="nav-cta">Get a Quote</a></li>
         </ul>
@@ -272,7 +298,8 @@ const HEADER = `<header class="site-header">
             <a href="/services" onclick="closeMenu()">Services</a>
             <a href="/index.html#process" onclick="closeMenu()">Process</a>
             <a href="/index.html#pricing" onclick="closeMenu()">Pricing</a>
-            <a href="/work" onclick="closeMenu()">Work</a>
+            <a href="/index.html#faq" onclick="closeMenu()">FAQs</a>
+            <a href="/work" onclick="closeMenu()">Our Work</a>
             <a href="/blog" onclick="closeMenu()">Blog</a>
             <a href="/index.html#contact" onclick="closeMenu()">Get a Quote</a>
         </div>
@@ -331,7 +358,7 @@ const FOOTER = `<footer>
             <ul>
                 <li><a href="/index.html#pricing">Pricing</a></li>
                 <li><a href="/index.html#faq">FAQs</a></li>
-                <li><a href="/work">Work</a></li>
+                <li><a href="/work">Our Work</a></li>
                 <li><a href="/blog">Blog</a></li>
                 <li><a href="/index.html#contact">Contact</a></li>
                 <li><a href="/privacy-policy.html">Privacy Policy</a></li>
@@ -401,24 +428,124 @@ function homepageCard(project) {
 </article>`;
 }
 
+function projectCategory(project) {
+  const label = String(project.tag || (project.services || [])[0] || '').trim();
+  if (!label) return null;
+  const slug = slugifyTag(label);
+  if (!slug) return null;
+  return { slug, label };
+}
+
+function projectTag(project) {
+  const category = projectCategory(project);
+  return category ? `<span class="card-tag">${escapeHtml(category.label)}</span>` : '';
+}
+
+const LISTING_NO_IMAGE = `<div class="blog-card-image work-card-no-image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>`;
+
+function workListingCard(project) {
+  const href = `/work/${encodeURIComponent(project.slug)}/`;
+  const summary = truncate(project.summary || '', 150) || 'Click to view the full case study…';
+  const category = projectCategory(project);
+  const date = fmtDate(project.completedAt);
+  const image = project.mainImageUrl
+    ? `<div class="blog-card-image"><img src="${escapeAttr(project.mainImageUrl)}?w=300&h=220&fit=crop" alt="${escapeAttr(project.mainImageAlt || project.business)}"></div>`
+    : LISTING_NO_IMAGE;
+
+  return `<article class="blog-card is-visible"${category ? ` data-category="${escapeAttr(category.slug)}"` : ''}>
+    <a href="${href}">
+        ${image}
+    </a>
+    <div class="blog-card-content">
+        ${projectTag(project)}
+        ${date ? `<p class="card-date">${escapeHtml(date)}</p>` : ''}
+        <h2><a href="${href}">${escapeHtml(project.business)}</a></h2>
+        <p>${escapeHtml(summary)}</p>
+        <a class="read-more" href="${href}">Read More →</a>
+    </div>
+</article>`;
+}
+
+function latestWorkSection(projects) {
+  const [primary, ...rest] = projects;
+  if (!primary) return '';
+
+  const secondary = rest.slice(0, 2);
+  const primaryHref = `/work/${encodeURIComponent(primary.slug)}/`;
+  const primaryImage = primary.mainImageUrl
+    ? `<img src="${escapeAttr(primary.mainImageUrl)}?w=800&h=600&fit=crop" alt="${escapeAttr(primary.mainImageAlt || primary.business)}">`
+    : '';
+  const primarySummary = truncate(primary.summary || '', 140) || 'View the full case study to learn more.';
+
+  const secondaryItems = secondary.map((project) => {
+    const href = `/work/${encodeURIComponent(project.slug)}/`;
+    const image = project.mainImageUrl
+      ? `<img src="${escapeAttr(project.mainImageUrl)}?w=220&h=176&fit=crop" alt="${escapeAttr(project.mainImageAlt || project.business)}">`
+      : '';
+    const summary = truncate(project.summary || '', 90) || 'View the full case study to learn more.';
+
+    return `            <a class="latest-secondary-item" href="${href}">
+                ${image}
+                <div>
+                    ${projectTag(project)}
+                    <h3>${escapeHtml(project.business)}</h3>
+                    <p class="latest-excerpt">
+                        ${escapeHtml(summary)}
+                    </p>
+                    <span class="latest-read-more">
+                        View project →
+                    </span>
+                </div>
+            </a>`;
+  }).join('\n');
+
+  return `<section class="latest-section">
+    <p class="latest-heading">Latest Projects</p>
+
+    <div class="latest-grid">
+
+        <a class="latest-primary" href="${primaryHref}">
+            ${primaryImage}
+
+            <div class="latest-primary-content">
+                ${projectTag(primary)}
+
+                <h2>${escapeHtml(primary.business)}</h2>
+
+                <p class="latest-primary-excerpt">
+                    ${escapeHtml(primarySummary)}
+                </p>
+
+                <span class="latest-read-more">
+                    View project →
+                </span>
+            </div>
+        </a>
+
+        <div class="latest-secondary">
+${secondaryItems}
+        </div>
+
+    </div>
+</section>`;
+}
+
 function categoryFilters(projects) {
   const seen = new Map();
   for (const project of projects) {
-    const label = project.tag || (project.services || [])[0];
-    if (!label) continue;
-    const slug = slugifyTag(label);
-    if (slug && !seen.has(slug)) seen.set(slug, label);
+    const category = projectCategory(project);
+    if (category && !seen.has(category.slug)) seen.set(category.slug, category.label);
   }
 
   const buttons = [
-    '    <button class="work-filter" data-filter="all" aria-pressed="true">All</button>',
+    '    <button class="blog-filter" data-filter="all" aria-pressed="true">All</button>',
     ...[...seen.entries()].map(
       ([slug, label]) =>
-        `    <button class="work-filter" data-filter="${escapeAttr(slug)}" aria-pressed="false">${escapeHtml(label)}</button>`,
+        `    <button class="blog-filter" data-filter="${escapeAttr(slug)}" aria-pressed="false">${escapeHtml(label)}</button>`,
     ),
   ];
 
-  return `<div class="work-filters">\n${buttons.join('\n')}\n</div>`;
+  return `<div class="blog-filters">\n${buttons.join('\n')}\n</div>`;
 }
 
 /* ── related projects (case study footer) ────────────────── */
@@ -427,9 +554,9 @@ function relatedProjectsSection(currentSlug, allProjects) {
   const related = allProjects.filter((p) => p.slug !== currentSlug).slice(0, 3);
   if (!related.length) return '';
 
-  const cards = related.map(workIndexCard).join('\n\n');
+  const cards = related.map(workListingCard).join('\n\n');
 
-  return `\n<section class="related-work">\n\n<div class="related-work-header">\n    <p class="article-label">More Projects</p>\n    <h2>Related Work</h2>\n    <p>\n        See more examples of how we've helped businesses like yours.\n    </p>\n</div>\n\n<div class="related-work-grid">\n\n${cards}\n\n</div>\n\n\n</section>\n`;
+  return `\n<section class="related-posts">\n\n<div class="related-posts-header">\n    <p class="article-label">Continue Reading</p>\n    <h2>Related Work</h2>\n    <p>\n        See more examples of how we've helped businesses like yours.\n    </p>\n</div>\n\n<div class="related-posts-grid">\n\n${cards}\n\n</div>\n\n\n</section>\n`;
 }
 
 /* ── testimonial + intro panel ────────────────────────────── */
@@ -472,50 +599,89 @@ function clientPanel(project) {
   return `<div class="case-client-panel">${logo}${link}</div>`;
 }
 
-function heroGallery(project) {
-  const images = project.gallery && project.gallery.length ? project.gallery : (
-    project.mainImageUrl ? [{ url: project.mainImageUrl, alt: project.mainImageAlt || project.business }] : []
-  );
-  if (!images.length) return '';
+function postHero(project) {
+  const image = project.mainImageUrl
+    ? { url: project.mainImageUrl, alt: project.mainImageAlt || project.business }
+    : (project.gallery || []).find((img) => img?.url);
+  if (!image?.url) return '';
 
-  const items = images
-    .map(
-      (img) =>
-        `        <div class="case-gallery-item"><img src="${escapeAttr(img.url)}?w=900" alt="${escapeAttr(img.alt || project.business)}"></div>`,
-    )
-    .join('\n');
-
-  return `<div class="case-hero-gallery case-hero-gallery-${Math.min(images.length, 4)}">\n${items}\n    </div>`;
+  return `<div class="post-hero-image"><img src="${escapeAttr(image.url)}?w=1200&h=500&fit=crop" alt="${escapeAttr(image.alt || project.business)}"></div>`;
 }
 
-function performanceStatsBlock(project) {
+function galleryFigures(project) {
+  const heroUrl = project.mainImageUrl || (project.gallery || []).find((img) => img?.url)?.url;
+  return (project.gallery || [])
+    .filter((img) => img?.url && img.url !== heroUrl)
+    .map((img) => `<figure><img src="${escapeAttr(img.url)}?w=1200" alt="${escapeAttr(img.alt || project.business)}"></figure>`)
+    .join('');
+}
+
+function articleBody(project) {
+  const title = String(project.business || '').trim();
+  const projectTitle = String(project.projectTitle || '').trim();
+  const summary = String(project.summary || '').trim();
+  const parts = [];
+  const headings = [];
+
+  if (projectTitle && projectTitle !== title) parts.push(`<p>${escapeHtml(projectTitle)}</p>`);
+  if (summary && summary !== projectTitle) parts.push(`<p>${escapeHtml(summary)}</p>`);
+
+  if (project.projectUrl) {
+    const label = project.projectUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    parts.push(`<p><a href="${escapeAttr(project.projectUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a></p>`);
+  }
+
+  if (project.brief) {
+    headings.push({ text: 'Brief', id: 'brief' });
+    parts.push(`<h2 id="brief">Brief</h2><p>${escapeHtml(project.brief)}</p>`);
+  }
+  if (project.background) {
+    headings.push({ text: 'Background', id: 'background' });
+    parts.push(`<h2 id="background">Background</h2><p>${escapeHtml(project.background)}</p>`);
+  }
+  if (project.quote) {
+    const author = String(project.name || title).trim();
+    parts.push(`<blockquote>&ldquo;${escapeHtml(project.quote)}&rdquo;</blockquote>`);
+    if (author) {
+      parts.push(`<p>${escapeHtml(author)}${project.clientSince ? ` · Client since ${escapeHtml(project.clientSince)}` : ''}</p>`);
+    }
+  }
+
+  headings.push(...extractHeadings(project.body));
+  parts.push(renderBody(project.body));
+
   const stats = project.performanceStats || [];
-  if (!stats.length) return '';
-  const items = stats
-    .map(
-      (s) =>
-        `        <div class="case-stat"><span class="case-stat-value">${escapeHtml(s.value || '')}</span><span class="case-stat-label">${escapeHtml(s.label || '')}</span></div>`,
-    )
-    .join('\n');
-  return `<section class="case-section" id="performance-stats">
-    <h2>The Numbers</h2>
-    <div class="case-stats-grid">
-${items}
-    </div>
-</section>`;
+  if (stats.length) {
+    headings.push({ text: 'The Numbers', id: 'the-numbers' });
+    const items = stats
+      .map((stat) => `<li><strong>${escapeHtml(stat.value || '')}</strong> ${escapeHtml(stat.label || '')}</li>`)
+      .join('');
+    parts.push(`<h2 id="the-numbers">The Numbers</h2><ul>${items}</ul>`);
+  }
+
+  parts.push(galleryFigures(project));
+
+  return {
+    html: parts.filter(Boolean).join('') || '<p>This case study has no content yet.</p>',
+    headings,
+  };
 }
 
 /* ── page templates ──────────────────────────────────────── */
 
 function workPage(project, allProjects) {
   const url = `${SITE_URL}/work/${project.slug}/`;
+  const title = String(project.business || '').trim();
   const description = truncate(project.summary || project.projectTitle || '', 155);
+  const date = fmtDate(project.completedAt);
+  const category = projectTag(project);
+  const { html: body, headings } = articleBody(project);
 
   const ld = jsonLd({
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
-    name: project.projectTitle || project.business,
-    about: project.business,
+    name: project.projectTitle || title,
+    about: title,
     description,
     ...(project.mainImageUrl ? { image: [project.mainImageUrl] } : {}),
     url,
@@ -533,19 +699,20 @@ function workPage(project, allProjects) {
       gtag('js', new Date());
       gtag('config', 'G-1JNH702LBD');
     </script>
-    <title>${escapeHtml(project.business)} Case Study | Web Development Sheffield</title>
+    <title>${escapeHtml(title)} | Web Development Sheffield</title>
     <meta name="description" content="${escapeAttr(description)}">
     <link rel="canonical" href="${url}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="${url}">
-    <meta property="og:title" content="${escapeAttr(project.business)} Case Study">
+    <meta property="og:title" content="${escapeAttr(title)}">
     <meta property="og:description" content="${escapeAttr(description)}">
 ${HEAD_COMMON}
+    <link rel="stylesheet" href="/css/blog-index.css">
     <script type="application/ld+json">
 ${ld}
     </script>
 </head>
-<body>
+<body class="work-article">
 
 ${HEADER}
 
@@ -553,43 +720,32 @@ ${HEADER}
     <div class="article-header-grid"></div>
     <div style="position:relative; max-width:860px;">
         <p class="article-label">Our Work</p>
-        <h1 id="post-title">${escapeHtml(project.business)}</h1>
-        <div class="article-meta">
-            ${project.tag ? `<span class="case-tag">${escapeHtml(project.tag)}</span>` : ''}
-            ${project.tag && project.services && project.services.length ? '<span class="case-header-divider">•</span>' : ''}
-            ${project.services && project.services.length ? `<span class="case-services">${servicesTags(project)}</span>` : ''}
-        </div>
+        <h1 id="post-title">${escapeHtml(title)}</h1>
+        <span class="blog-category-tag">${category}</span>${category && date ? ' • ' : ''}${date ? `<span class="article-meta"><span>Published ${escapeHtml(date)}</span></span>` : ''}
     </div>
 </div>
 
-${heroGallery(project)}
+${postHero(project)}
 
-<div class="case-layout">
+<div class="article-layout">
 
-    <div class="case-main">
+${renderToc(headings)}
 
-        ${project.caseStudyType ? `<p class="case-eyebrow">Case study: ${escapeHtml(project.caseStudyType)}</p>` : ''}
-        ${project.projectTitle ? `<h2 class="case-project-title">${escapeHtml(project.projectTitle)}</h2>` : ''}
-
-        ${clientPanel(project)}
-
-        ${introPanel(project)}
-
-        ${testimonialBlock(project)}
-
-        ${renderBody(project.body)}
-
-        ${performanceStatsBlock(project)}
-
-    </div>
+  <div class="article-body" id="post-body">
+${body}
+  </div>
 
 </div>
+
 
 <section class="article-cta-wrapper">
   <section class="article-cta">
-      <h2>Want results like this for your business?</h2>
-      <p>We design, build, and maintain custom websites for all kinds of businesses, from sole traders to large enterprises.</p>
-      <a href="/index.html#contact" class="btn-primary">Get a Quote</a>
+      <h2>Need a website for your business?</h2>
+      <p> We design, build, and maintain custom websites for all kinds of businesses, from sole traders to large enterprises. </p>
+      <a href="/index.html#contact" class="btn-primary">
+          Get a Quote
+      </a>
+
   </section>
 </section>
 
@@ -599,6 +755,7 @@ ${FOOTER}
 
 <script src="/js/main.js"></script>
 
+
 </body>
 </html>
 `;
@@ -607,9 +764,8 @@ ${FOOTER}
 function workIndexPage(projects) {
   const url = `${SITE_URL}/work/`;
   const description = 'Case studies of websites we\u2019ve designed and built for businesses in Sheffield and beyond.';
-  const featured = projects.filter((p) => p.featured);
-  const rest = projects.filter((p) => !p.featured);
-  const cards = projects.map(workIndexCard).join('\n\n');
+  const cards = projects.map(workListingCard).join('\n\n');
+  const latest = latestWorkSection(projects);
 
   const breadcrumbLd = jsonLd({
     '@context': 'https://schema.org',
@@ -655,6 +811,7 @@ function workIndexPage(projects) {
     <meta property="og:url" content="${url}">
     <meta name="twitter:card" content="summary_large_image">
 ${HEAD_COMMON}
+    <link rel="stylesheet" href="/css/blog-index.css">
     <script type="application/ld+json">
 ${breadcrumbLd}
     </script>
@@ -662,7 +819,7 @@ ${breadcrumbLd}
 ${collectionLd}
     </script>
 </head>
-<body>
+<body class="work-index">
 
 ${HEADER}
 
@@ -670,13 +827,15 @@ ${HEADER}
     <div class="article-header-grid"></div>
     <div style="position:relative; max-width:860px;">
         <p class="article-label">Our Work</p>
-        <h1 id="work-title">Case Studies</h1>
+        <h1 id="post-title">Case Studies</h1>
         <div class="article-meta"><span>Real websites we've designed and built, and the results they've delivered for our clients.</span></div>
     </div>
 </div>
 
+${latest}
+
 <section class="articles-section-header">
-    <p class="latest-heading">${featured.length ? 'All Projects' : 'Projects'}</p>
+    <p class="latest-heading">All Projects</p>
     <p class="articles-intro">
         Case studies of our past web development and web design projects.
         Our case studies show you how we work and the services we offer.
@@ -685,18 +844,17 @@ ${HEADER}
 
 ${categoryFilters(projects)}
 
-<section class="work-grid" id="work-grid">
+<section class="blog-grid" id="blog-grid">
 
 ${cards}
 
-<p class="work-empty" id="work-empty">No projects in this category yet — check back soon.</p>
+<p class="blog-empty" id="blog-empty">No projects in this category yet — check back soon.</p>
 
 </section>
 
 ${FOOTER}
 
 <script src="/js/main.js"></script>
-<script src="/js/work-filters.js"></script>
 
 </body>
 </html>

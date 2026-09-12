@@ -47,6 +47,21 @@
     color: var(--white);
 }
 
+/* Index page reuses the blog listing layout. Reset work.css card-tag
+   defaults so those pills match /blog, without changing case studies. */
+.work-index .card-tag,
+.work-article .card-tag {
+    background: transparent;
+    color: var(--accent);
+    border-color: var(--border);
+}
+
+.work-index .latest-primary .card-tag {
+    background: transparent;
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
 /* ── landing page: grid + cards ──────────────────────────── */
 .work-grid {
     display: grid;
@@ -409,6 +424,14 @@
     color: var(--muted);
     margin-top: 0.55rem;
     text-align: center;
+}
+
+.work-article #post-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    display: block;
+    margin: 1.5rem 0;
 }
 
 /* ── case study: performance stats ───────────────────────── */
