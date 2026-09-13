@@ -16,11 +16,7 @@
     <lastmod>2026-08-17</lastmod>
   </url>
   <url>
-    <loc>https://webdevelopmentsheffield.co.uk/services/website-development-sheffield.html</loc>
-    <lastmod>2026-08-17</lastmod>
-  </url>
-  <url>
-    <loc>https://webdevelopmentsheffield.co.uk/services/website-support-sheffield.html</loc>
+    <loc>https://webdevelopmentsheffield.co.uk/services/web-development-sheffield.html</loc>
     <lastmod>2026-08-17</lastmod>
   </url>
   <url>
@@ -87,4 +83,18 @@
     <loc>https://webdevelopmentsheffield.co.uk/blog/why-your-website-isnt-converting-and-how-to-fix-it/</loc>
     <lastmod>2026-08-18</lastmod>
   </url>
+<!-- work:start -->
+  <url>
+    <loc>https://webdevelopmentsheffield.co.uk/work/</loc>
+    <lastmod>2026-09-12</lastmod>
+  </url>
+  <url>
+    <loc>https://webdevelopmentsheffield.co.uk/work/apprentago/</loc>
+    <lastmod>2026-08-23</lastmod>
+  </url>
+  <url>
+    <loc>https://webdevelopmentsheffield.co.uk/work/google/</loc>
+    <lastmod>2026-09-12</lastmod>
+  </url>
+<!-- work:end -->
 </urlset>
