@@ -401,9 +401,16 @@
     border-bottom: 1px solid var(--border);
 }
 
-.case-client-logo {
+#post-body .case-client-logo {
     max-height: 38px;
     width: auto;
+    margin: 0;
+    border-radius: 0;
+    display: block;
+}
+
+#post-body .case-client-panel a {
+    border-bottom: 0;
 }
 
 .case-client-panel a {

@@ -565,13 +565,11 @@ function articleBody(project) {
   const parts = [];
   const headings = [];
 
+  const logoPanel = clientPanel(project);
+  if (logoPanel) parts.push(logoPanel);
+
   if (projectTitle && projectTitle !== title) parts.push(`<p>${escapeHtml(projectTitle)}</p>`);
   if (summary && summary !== projectTitle) parts.push(`<p>${escapeHtml(summary)}</p>`);
-
-  if (project.projectUrl) {
-    const label = project.projectUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
-    parts.push(`<p><a href="${escapeAttr(project.projectUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a></p>`);
-  }
 
   if (project.brief) {
     headings.push({ text: 'Brief', id: 'brief' });
