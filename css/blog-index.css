@@ -18,6 +18,7 @@
     text-transform: uppercase;
     color: var(--accent);
     margin: 0 0 0.5rem;
+    margin-right: -0.14em;
 }
 
 .latest-grid {
@@ -123,6 +124,14 @@
     margin-top: 2rem;
     border-top: 1.0px solid var(--border);
     gap: 0.6rem;
+}
+
+/* Mobile responsive fix */
+@media (max-width: 780px) {
+    .articles-section-header {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
 
 .articles-intro {

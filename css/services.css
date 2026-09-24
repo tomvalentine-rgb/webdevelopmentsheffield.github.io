@@ -4,6 +4,10 @@
    ═══════════════════════════════════════════════ */
 
 
+.hero.services-page-hero {
+  min-height: unset;
+}
+
 .services-page-hero h1 {
   max-width: 1050px;
 }
