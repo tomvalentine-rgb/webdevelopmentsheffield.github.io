@@ -1,9 +1,3 @@
-.design-hero {
-  min-height: auto;
-  padding-top: 13rem;
-  padding-bottom: 7rem;
-}
-
 .design-hero h1 {
   max-width: 1050px;
 }
@@ -333,11 +327,6 @@ main > #process {
 }
 
 @media (max-width: 768px) {
-  .design-hero {
-    padding-top: 9rem;
-    padding-bottom: 4rem;
-  }
-
   .design-intro-layout {
     gap: 1.25rem;
   }

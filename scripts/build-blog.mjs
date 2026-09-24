@@ -36,6 +36,15 @@ const GROQ = `*[_type == "post"] | order(publishedAt desc){
   publishedAt,
   _updatedAt,
   body,
+  "category": coalesce(
+    category->title,
+    category->name,
+    categories[0]->title,
+    categories[0]->name,
+    category,
+    categories[0]
+  ),
+  "categorySlug": coalesce(category->slug.current, categories[0]->slug.current),
   "imageUrl": mainImage.asset->url
 }`;
 
@@ -78,6 +87,80 @@ function truncate(text, max) {
   if (!text) return '';
   if (text.length <= max) return text;
   return text.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
+}
+
+function slugifyCategory(value) {
+  return String(value ?? '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-');
+}
+
+function labelFromSlug(slug) {
+  if (slug === 'seo') return 'SEO';
+  return slug
+    .split('-')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function postCategory(post) {
+  const raw = post.category;
+  const title = typeof raw === 'string'
+    ? raw.trim()
+    : String(raw?.title || raw?.name || '').trim();
+  if (!title) return null;
+
+  const slug = slugifyCategory(post.categorySlug || title);
+  if (!slug) return null;
+
+  const label = /[A-Z\s]/.test(title) ? title : labelFromSlug(slug);
+  return { slug, label };
+}
+
+function articlesSectionHeader() {
+  return `
+<section class="articles-section-header">
+    <p class="latest-heading">All Articles</p>
+    <p class="articles-intro">
+        View all our articles on web design, web development,
+        website maintenance and SEO.
+    </p>
+</section>`;
+}
+
+function categoryTag(post) {
+  const category = postCategory(post);
+  return category ? `<span class="card-tag">${escapeHtml(category.label)}</span>` : '';
+}
+
+function categoryFilters(posts) {
+  const seen = new Map([
+    ['web-development', 'Web Development'],
+    ['web-design', 'Web Design'],
+    ['website-maintenance', 'Website Maintenance'],
+    ['seo', 'SEO'],
+  ]);
+
+  for (const post of posts) {
+    const category = postCategory(post);
+    if (category && !seen.has(category.slug)) {
+      seen.set(category.slug, category.label);
+    }
+  }
+
+  const buttons = [
+    '    <button class="blog-filter" data-filter="all" aria-pressed="true">All</button>',
+    ...[...seen.entries()].map(
+      ([slug, label]) =>
+        `    <button class="blog-filter" data-filter="${escapeAttr(slug)}" aria-pressed="false">${escapeHtml(label)}</button>`,
+    ),
+  ];
+
+  return `<div class="blog-filters">\n${buttons.join('\n')}\n</div>`;
 }
 
 /**
@@ -240,10 +323,12 @@ const HEADER = `<header class="site-header">
         </a>
 
         <ul class="nav-links">
+            <li><a href="/">Home</a></li>
             <li><a href="/services">Services</a></li>
             <li><a href="/index.html#process">Process</a></li>
             <li><a href="/index.html#pricing">Pricing</a></li>
             <li><a href="/index.html#faq">FAQs</a></li>
+            <li><a href="/work">Our Work</a></li>
             <li><a href="/blog">Blog</a></li>
             <li><a href="/index.html#contact" class="nav-cta">Get a Quote</a></li>
         </ul>
@@ -259,7 +344,8 @@ const HEADER = `<header class="site-header">
             <a href="/index.html#process" onclick="closeMenu()">Process</a>
             <a href="/index.html#pricing" onclick="closeMenu()">Pricing</a>
             <a href="/index.html#faq" onclick="closeMenu()">FAQs</a>
-            <a href="/index.html#blog" onclick="closeMenu()">Blog</a>
+            <a href="/work" onclick="closeMenu()">Our Work</a>
+            <a href="/blog" onclick="closeMenu()">Blog</a>
             <a href="/index.html#contact" onclick="closeMenu()">Get a Quote</a>
         </div>
 
@@ -269,7 +355,6 @@ const HEADER = `<header class="site-header">
 
 const FOOTER = `<footer>
     <div class="footer-container">
-
         <div class="footer-brand">
             <a class="nav-logo" href="/">
                 <img src="/assets/logo.png" alt="Web Development Sheffield Logo" class="logo-img">
@@ -277,18 +362,18 @@ const FOOTER = `<footer>
             </a>
             <p>
                 Professional web design and web development services for
-                businesses in Sheffield and across the globe.
+                businesses in Sheffield and across the world.
             </p>
             <div class="social-links">
                 <a href="https://www.linkedin.com/company/webdevelopmentsheffield/">LinkedIn</a>
                 <a href="https://www.facebook.com/profile.php?id=61591130790464">Facebook</a>
-                <a href="https://maps.app.goo.gl/odgEvB52S14oxhgo6">Google</a>
+                <a href="https://maps.app.goo.gl/FXx9kFdjksv7dSPq9">Google</a>
             </div>
         </div>
 
         <div class="footer-column">
             <h3>Contact</h3>
-            <p><strong>Web Development Sheffield</strong></p>
+            <p><a href="/"><strong>Web Development Sheffield</strong></a></p>
             <address>
                 Millhouses<br>
                 Sheffield<br>
@@ -303,13 +388,12 @@ const FOOTER = `<footer>
         </div>
 
         <div class="footer-column">
-            <h3>Services</h3>
+            <h3><a href="/services">Services</a></h3>
             <ul>
-                <li><a href="/services">Web Design</a></li>
-                <li><a href="/services">Web Development</a></li>
-                <li><a href="/services">SEO</a></li>
-                <li><a href="/services">Website Maintenance</a></li>
-                <li><a href="/services">E-Commerce</a></li>
+                <li><a href="/services/web-design-sheffield.html" title="Web Design Sheffield">Web Design</a></li>
+                <li><a href="/services/software-development-sheffield.html" title="Software Development Sheffield">Software Development</a></li>
+                <li><a href="/services" title="Search Engine Optimization Sheffield">SEO</a></li>
+                <li><a href="/services/website-maintenance-sheffield.html" title="Website Maintenance Sheffield">Website Maintenance</a></li>
             </ul>
         </div>
 
@@ -318,7 +402,8 @@ const FOOTER = `<footer>
             <ul>
                 <li><a href="/index.html#pricing">Pricing</a></li>
                 <li><a href="/index.html#faq">FAQs</a></li>
-                <li><a href="/index.html#blog">Blog</a></li>
+                <li><a href="/work">Our Work</a></li>
+                <li><a href="/blog">Blog</a></li>
                 <li><a href="/index.html#contact">Contact</a></li>
                 <li><a href="/privacy-policy.html">Privacy Policy</a></li>
             </ul>
@@ -358,6 +443,104 @@ function card(post) {
 </article>`;
 }
 
+function indexCard(post) {
+  const date = fmtDate(post.publishedAt);
+  const summary = truncate(firstParagraph(post.body), 150) || 'Click to read the full article…';
+  const href = `/blog/${encodeURIComponent(post.slug)}/`;
+  const category = postCategory(post);
+  const image = post.imageUrl
+    ? `<div class="blog-card-image"><img src="${escapeAttr(post.imageUrl)}?w=300&h=220&fit=crop" alt="${escapeAttr(post.title)}"></div>`
+    : NO_IMAGE_SVG;
+
+  return `<article class="blog-card is-visible"${category ? ` data-category="${escapeAttr(category.slug)}"` : ''}>
+    <a href="${href}">
+        ${image}
+    </a>
+    <div class="blog-card-content">
+        ${categoryTag(post)}
+        ${date ? `<p class="card-date">${escapeHtml(date)}</p>` : ''}
+        <h2><a href="${href}">${escapeHtml(post.title)}</a></h2>
+        <p>${escapeHtml(summary)}</p>
+        <a class="read-more" href="${href}">Read More →</a>
+    </div>
+</article>`;
+}
+
+function latestSection(posts) {
+  const [primary, ...rest] = posts;
+  if (!primary) return '';
+
+  const secondary = rest.slice(0, 2);
+
+  const primaryHref = `/blog/${encodeURIComponent(primary.slug)}/`;
+
+  const primaryImage = primary.imageUrl
+    ? `<img src="${escapeAttr(primary.imageUrl)}?w=800&h=600&fit=crop" alt="${escapeAttr(primary.title)}">`
+    : '';
+
+  const primarySummary =
+    truncate(firstParagraph(primary.body), 140) ||
+    'Read the full article to learn more.';
+
+  const secondaryItems = secondary
+    .map((post) => {
+      const href = `/blog/${encodeURIComponent(post.slug)}/`;
+
+      const image = post.imageUrl
+        ? `<img src="${escapeAttr(post.imageUrl)}?w=220&h=176&fit=crop" alt="${escapeAttr(post.title)}">`
+        : '';
+
+      const summary =
+        truncate(firstParagraph(post.body), 90) ||
+        'Read the full article to learn more.';
+
+      return `            <a class="latest-secondary-item" href="${href}">
+                ${image}
+                <div>
+                    ${categoryTag(post)}
+                    <h3>${escapeHtml(post.title)}</h3>
+                    <p class="latest-excerpt">
+                        ${escapeHtml(summary)}
+                    </p>
+                    <span class="latest-read-more">
+                        Read article →
+                    </span>
+                </div>
+            </a>`;
+    })
+    .join('\n');
+
+  return `<section class="latest-section">
+    <p class="latest-heading">Latest Articles</p>
+
+    <div class="latest-grid">
+
+        <a class="latest-primary" href="${primaryHref}">
+            ${primaryImage}
+
+            <div class="latest-primary-content">
+                ${categoryTag(primary)}
+
+                <h2>${escapeHtml(primary.title)}</h2>
+
+                <p class="latest-primary-excerpt">
+                    ${escapeHtml(primarySummary)}
+                </p>
+
+                <span class="latest-read-more">
+                    Read article →
+                </span>
+            </div>
+        </a>
+
+        <div class="latest-secondary">
+${secondaryItems}
+        </div>
+
+    </div>
+</section>`;
+}
+
 /* ── related posts section ───────────────────────────────── */
 
 /**
@@ -371,35 +554,9 @@ function relatedPostsSection(currentSlug, allPosts) {
 
   if (!related.length) return '';
 
-  const cards = related.map((post) => {
-    const date = fmtDate(post.publishedAt);
-    const summary = truncate(firstParagraph(post.body), 120) || 'Click to read the full article…';
-    const image = post.imageUrl
-      ? `<div class="related-post-image">\n                <img\n                    src="${escapeAttr(post.imageUrl)}?w=400&h=220&fit=crop"\n                    alt="${escapeAttr(post.title)}">\n            </div>`
-      : `<div class="related-post-image related-post-no-image"></div>`;
+  const cards = related.map(indexCard).join('\n\n');
 
-    return `    <article class="related-post-card">
-        <a href="/blog/${encodeURIComponent(post.slug)}/">
-
-            ${image}
-
-            <div class="related-post-content">
-                ${date ? `<span class="related-post-date">\n                    ${escapeHtml(date)}\n                </span>` : ''}
-
-                <h3>
-                    ${escapeHtml(post.title)}
-                </h3>
-
-                <p>
-                    ${escapeHtml(summary)}
-                </p>
-            </div>
-
-        </a>
-    </article>`;
-  }).join('\n\n');
-
-  return `\n<section class="related-posts">\n\n<div class="related-posts-header">\n    <p class="section-label">Continue Reading</p>\n    <h2>Related Articles</h2>\n    <p>\n        Explore more insights, tips and guides from\n        Web Development Sheffield.\n    </p>\n</div>\n\n<div class="related-posts-grid">\n\n${cards}\n\n</div>\n\n\n</section>\n`;
+  return `\n<section class="related-posts">\n\n<div class="related-posts-header">\n    <p class="article-label">Continue Reading</p>\n    <h2>Related Articles</h2>\n    <p>\n        Explore more insights, tips and guides from\n        Web Development Sheffield.\n    </p>\n</div>\n\n<div class="related-posts-grid">\n\n${cards}\n\n</div>\n\n\n</section>\n`;
 }
 
 /* ── page templates ──────────────────────────────────────── */
@@ -408,6 +565,7 @@ function postPage(post, allPosts) {
   const url = `${SITE_URL}/blog/${post.slug}/`;
   const description = truncate(firstParagraph(post.body), 155);
   const date = fmtDate(post.publishedAt);
+  const category = postCategory(post);
 
   const hero = post.imageUrl
     ? `<div class="post-hero-image"><img src="${escapeAttr(post.imageUrl)}?w=1200&h=500&fit=crop" alt="${escapeAttr(post.title)}"></div>`
@@ -426,6 +584,7 @@ function postPage(post, allPosts) {
     datePublished: post.publishedAt,
     dateModified: post._updatedAt || post.publishedAt,
     ...(post.imageUrl ? { image: [post.imageUrl] } : {}),
+    ...(category ? { articleSection: category.label } : {}),
     url,
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     author: { '@type': 'Organization', name: 'Web Development Sheffield', url: `${SITE_URL}/` },
@@ -454,6 +613,7 @@ function postPage(post, allPosts) {
     <meta property="og:title" content="${escapeAttr(post.title)}">
     <meta property="og:description" content="${escapeAttr(description)}">
 ${HEAD_COMMON}
+    <link rel="stylesheet" href="/css/blog-index.css">
     <script type="application/ld+json">
 ${ld}
     </script>
@@ -465,10 +625,9 @@ ${HEADER}
 <div class="article-header">
     <div class="article-header-grid"></div>
     <div style="position:relative; max-width:860px;">
-        <a class="back-link" href="/#blog">Back</a>
-        <p class="article-label">Web Development Sheffield — Blog</p>
+        <p class="article-label">Design Articles</p>
         <h1 id="post-title">${escapeHtml(post.title)}</h1>
-        <div class="article-meta">${date ? `<span>Published ${escapeHtml(date)}</span>` : ''}</div>
+        <span class="blog-category-tag">${categoryTag(post)}</span> • <span class="article-meta">${date ? `<span>Published ${escapeHtml(date)}</span>` : ''}</span></span>
     </div>
 </div>
 
@@ -488,7 +647,7 @@ ${body}
 <section class="article-cta-wrapper">
   <section class="article-cta">
       <h2>Need a website for your business?</h2>
-      <p> We partner with businesses at every stage of growth to deliver custom websites that drive real results. </p>
+      <p> We design, build, and maintain custom websites for all kinds of businesses, from sole traders to large enterprises. </p>
       <a href="/index.html#contact" class="btn-primary">
           Get a Quote
       </a>
@@ -510,20 +669,48 @@ ${FOOTER}
 
 function blogIndexPage(posts) {
   const url = `${SITE_URL}/blog/`;
-  const cards = posts.map(card).join('\n');
-  const ld = jsonLd({
+  const description = 'Practical articles on web design, web development, SEO and website performance for Sheffield businesses.';
+  const cards = posts.map(indexCard).join('\n\n');
+  const latest = latestSection(posts);
+  const breadcrumbLd = jsonLd({
     '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'Blog | Web Development Sheffield',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: url },
+    ],
+  });
+  const orgLd = jsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${SITE_URL}/#organization`,
+    name: 'Web Development Sheffield',
+    url: `${SITE_URL}/`,
+    logo: `${SITE_URL}/assets/logo.png`,
+  });
+  const blogLd = jsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    '@id': `${url}#blog`,
+    name: 'Web Development Sheffield Blog',
     url,
-    description:
-      'Practical articles on web design, web development, SEO and website performance for Sheffield businesses.',
-    hasPart: posts.map((p) => ({
-      '@type': 'BlogPosting',
-      headline: p.title,
-      url: `${SITE_URL}/blog/${p.slug}/`,
-      datePublished: p.publishedAt,
-    })),
+    description,
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    blogPost: posts.map((p) => {
+      const category = postCategory(p);
+      return {
+        '@type': 'BlogPosting',
+        headline: p.title,
+        url: `${SITE_URL}/blog/${p.slug}/`,
+        datePublished: p.publishedAt,
+        dateModified: p._updatedAt || p.publishedAt,
+        ...(p.imageUrl ? { image: `${p.imageUrl}?w=1200&h=630&fit=crop` } : {}),
+        description: truncate(firstParagraph(p.body), 155),
+        ...(category ? { articleSection: category.label } : {}),
+        author: { '@id': `${SITE_URL}/#organization` },
+        publisher: { '@id': `${SITE_URL}/#organization` },
+      };
+    }),
   });
 
   return `<!DOCTYPE html>
@@ -536,12 +723,24 @@ function blogIndexPage(posts) {
       gtag('js', new Date());
       gtag('config', 'G-1JNH702LBD');
     </script>
-    <title>Blog | Web Development Sheffield</title>
-    <meta name="description" content="Practical articles on web design, web development, SEO and website performance for Sheffield businesses.">
+    <title>Web Design Articles &amp; Guides | Web Development Sheffield</title>
+    <meta name="description" content="${escapeAttr(description)}">
     <link rel="canonical" href="${url}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Web Design Articles &amp; Guides | Web Development Sheffield">
+    <meta property="og:description" content="${escapeAttr(description)}">
+    <meta property="og:url" content="${url}">
+    <meta name="twitter:card" content="summary_large_image">
 ${HEAD_COMMON}
+    <link rel="stylesheet" href="/css/blog-index.css">
     <script type="application/ld+json">
-${ld}
+${breadcrumbLd}
+    </script>
+    <script type="application/ld+json">
+${orgLd}
+    </script>
+    <script type="application/ld+json">
+${blogLd}
     </script>
 </head>
 <body>
@@ -551,15 +750,24 @@ ${HEADER}
 <div class="article-header">
     <div class="article-header-grid"></div>
     <div style="position:relative; max-width:860px;">
-        <a class="back-link" href="/#blog">Back</a>
-        <p class="article-label">Web Development Sheffield — Blog</p>
-        <h1 id="post-title">From The Blog</h1>
-        <div class="article-meta"><span>Tips, insights and advice for businesses looking to grow online.</span></div>
+        <p class="article-label">Design Articles</p>
+        <h1 id="post-title">Web Design Articles</h1>
+        <div class="article-meta"><span>Tips, insights and practical advice on web design, web development, website maintenance and SEO.</span></div>
     </div>
 </div>
 
-<section style="max-width:860px; margin:0 auto; padding:4rem 4rem 6rem;">
-${cards || '<p style="color:var(--muted)">No articles published yet. Check back soon!</p>'}
+${latest}
+
+${articlesSectionHeader()}
+
+${categoryFilters(posts)}
+
+<section class="blog-grid" id="blog-grid">
+
+${cards}
+
+<p class="blog-empty" id="blog-empty">No articles in this category yet — check back soon.</p>
+
 </section>
 
 ${FOOTER}
@@ -573,19 +781,48 @@ ${FOOTER}
 }
 
 function sitemap(posts) {
+  // Define all static, non-changing URLs here
+  const staticRoutes = [
+    { url: '/', lastmod: null },
+    { url: '/privacy-policy/', lastmod: '2026-08-17' },
+    { url: '/services/', lastmod: '2026-08-17' },
+    { url: '/services/web-design-sheffield.html', lastmod: '2026-08-17' },
+    { url: '/services/website-development-sheffield.html', lastmod: '2026-08-17' },
+    { url: '/services/website-support-sheffield.html', lastmod: '2026-08-17' },
+    { url: '/services/software-development-sheffield.html', lastmod: '2026-08-17' },
+  ];
+
+  // 2. Find the latest update date across all blog posts
   const latest = posts
     .map((p) => p._updatedAt || p.publishedAt)
     .filter(Boolean)
     .sort()
     .pop();
-  const urls = [
-    `  <url>\n    <loc>${SITE_URL}/</loc>\n  </url>`,
-    `  <url>\n    <loc>${SITE_URL}/blog/</loc>${latest ? `\n    <lastmod>${isoDay(latest)}</lastmod>` : ''}\n  </url>`,
-    ...posts.map((p) => {
-      const lm = p._updatedAt || p.publishedAt;
-      return `  <url>\n    <loc>${SITE_URL}/blog/${p.slug}/</loc>${lm ? `\n    <lastmod>${isoDay(lm)}</lastmod>` : ''}\n  </url>`;
-    }),
-  ];
+
+  // 3. Map static routes to XML <url> strings
+  const staticUrls = staticRoutes.map(
+    (page) =>
+      `  <url>\n    <loc>${SITE_URL}${page.url}</loc>${
+        page.lastmod ? `\n    <lastmod>${isoDay(page.lastmod)}</lastmod>` : ''
+      }\n  </url>`
+  );
+
+  // 4. Map the blog index page using the latest post's date
+  const blogIndexUrl = `  <url>\n    <loc>${SITE_URL}/blog/</loc>${
+    latest ? `\n    <lastmod>${isoDay(latest)}</lastmod>` : ''
+  }\n  </url>`;
+
+  // 5. Map individual blog posts
+  const postUrls = posts.map((p) => {
+    const lm = p._updatedAt || p.publishedAt;
+    return `  <url>\n    <loc>${SITE_URL}/blog/${p.slug}/</loc>${
+      lm ? `\n    <lastmod>${isoDay(lm)}</lastmod>` : ''
+    }\n  </url>`;
+  });
+
+  // Combine static pages, blog index, and all dynamic post URLs
+  const urls = [...staticUrls, blogIndexUrl, ...postUrls];
+
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
 }
 

@@ -4,10 +4,8 @@
    ═══════════════════════════════════════════════ */
 
 
-.services-page-hero {
-  min-height: auto;
-  padding-top: 13rem;
-  padding-bottom: 7rem;
+.hero.services-page-hero {
+  min-height: unset;
 }
 
 .services-page-hero h1 {
@@ -290,11 +288,6 @@
 
 
 @media (max-width: 768px) {
-  .services-page-hero {
-    padding-top: 9rem;
-    padding-bottom: 4rem;
-  }
-
   .service-feature-grid,
   .capabilities-grid,
   .reasons-grid {
